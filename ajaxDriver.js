@@ -2,25 +2,36 @@
 /*global jQuery */
 module.exports = (function () {
     'use strict';
-    var genBooklogFolderCtrl = require('../booklog/apiInterface'),
+    var jQuery = require('jquery-deferred'),
+        genBooklogFolderCtrl = require('../booklog/apiInterface'),
         genBooklogFolder = genBooklogFolderCtrl();
 
     function driver(reqType, param) {
         //console.log('ajax driver');
         //console.log(reqType);
         //console.log(param);
-        genBooklogFolder.genFolder(param.count);
         if (reqType === 'genBKL') {
+            genBooklogFolder.genFolder(param.count);
             return {
                 status: 'OK'
             };
-        } else {
-            throw new Error('unkown reqType:' + reqType);
         }
+        throw new Error('unkown reqType:' + reqType);
     }
-
+    function driverAsync(reqType, param) {
+        var dfr =  jQuery.Deferred();
+        if (reqType === 'genBKL') {
+            genBooklogFolder.genFolder(param.count);
+            dfr.resolve({
+                status: 'OK'
+            });
+            return dfr.promise();
+        }
+        throw new Error('unkown reqType:' + reqType);
+    }
     return {
-        driver: driver
+        driver: driver,
+        driverAsync: driverAsync,
     };
 }());
 
