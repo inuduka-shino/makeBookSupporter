@@ -2,7 +2,7 @@
 /*global jQuery */
 module.exports = (function () {
     'use strict';
-    var jQuery = require('jquery-deferred'),
+    var
         genBooklogFolderCtrl = require('../booklog/apiInterface'),
         genBooklogFolder = genBooklogFolderCtrl();
 
@@ -19,13 +19,16 @@ module.exports = (function () {
         throw new Error('unkown reqType:' + reqType);
     }
     function driverAsync(reqType, param) {
-        var dfr =  jQuery.Deferred();
+        var ret;
         if (reqType === 'genBKL') {
-            genBooklogFolder.genFolder(param.count);
-            dfr.resolve({
-                status: 'OK'
-            });
-            return dfr.promise();
+            ret = genBooklogFolder.genFolderAsync(param.count)
+                .then(function () {
+                    return {
+                        status: 'OK'
+                    };
+                })
+                .promise();
+            return ret;
         }
         throw new Error('unkown reqType:' + reqType);
     }
