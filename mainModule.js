@@ -26,7 +26,7 @@ module.exports = (function () {
         try {
             ajaxDriverAsync(req.params.ajaxtype, req.body)
                 .done(function (response) {
-                    //console.log('async done!');
+                    console.log('async done!');
                     res.json(response);
                 })
                 .fail(function (error) {
