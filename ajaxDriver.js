@@ -7,9 +7,6 @@ module.exports = (function () {
         genBooklogFolder = genBooklogFolderCtrl();
 
     function driver(reqType, param) {
-        //console.log('ajax driver');
-        //console.log(reqType);
-        //console.log(param);
         if (reqType === 'genBKL') {
             genBooklogFolder.genFolder(param.count);
             return {
@@ -20,11 +17,19 @@ module.exports = (function () {
     }
     function driverAsync(reqType, param) {
         var ret;
+        //console.log('ajax driver');
+        //console.log(reqType);
+        //console.log(param);
         if (reqType === 'genBKL') {
             ret = genBooklogFolder.genFolderAsync(param.count)
                 .then(function () {
                     return {
                         status: 'OK'
+                    };
+                }, function (error) {
+                    console.log(error);
+                    return {
+                        status: 'ERROR'
                     };
                 })
                 .promise();
