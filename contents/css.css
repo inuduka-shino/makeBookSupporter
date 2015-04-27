@@ -1,0 +1,10 @@
+div.mbs-filelist-ctrl div.list-group a.list-group-item > span.folderName {
+    margin-left:    5px;
+}
+div.mbs-filelist-ctrl div.list-group a.list-group-item > span.glyphicon {
+    color: Goldenrod
+}
+div.mbs-filelist-ctrl div.list-group a.list-group-item > span.glyphicon.gray {
+    color: #555;
+}
+

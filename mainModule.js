@@ -49,6 +49,11 @@ module.exports = (function () {
         //console.log(req.params.jsfile);
         res.sendFile(__dirname + '/contents' + req.params.jsfile);
     });
+    router.use(':cssfile(*.css)', function (req, res) {
+        //console.log('js loaded.');
+        //console.log(req.params.jsfile);
+        res.sendFile(__dirname + '/contents' + req.params.cssfile);
+    });
 
 
     router.use(':url(*)', function (req) {
