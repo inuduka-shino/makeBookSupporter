@@ -43,7 +43,6 @@
     </nav>
 
     <div class="container-fluid">
-
         <div class="panel panel-default mbs-gbl-ctrl">
           <div class="panel-body">
             <form class="form-inline">
@@ -63,7 +62,20 @@
             </form>
           </div>
         </div>
-
+    </div>
+    <div class="container-fluid">
+      <div class="panel panel-default mbs-gbl-ctrl">
+        <div class="panel-body">
+            <div class="list-group">
+                <template id="fileListItem">
+                  <a href="#" class="list-group-item">
+                      <span class="glyphicon glyphicon-folder-open" aria-hidden="true"></span>
+                      <span class="folderName">folder name</span>
+                  </a>
+                </template>
+            </div>
+        </div>
+      </div>
     </div>
 
     <script src="/pub/lib/jquery/jquery-2.1.1.min.js"></script>
@@ -76,5 +88,6 @@
     <script src="/mbs/genBKLCtrl.js"></script>
 
     <script src="/mbs/mainCtrl.js"></script>
+    <script src="/mbs/fileListCtrl.js"></script>
   </body>
 </html>
