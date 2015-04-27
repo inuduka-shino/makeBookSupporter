@@ -16,7 +16,22 @@ md('jsonCall', function () {
         return jqXHR;
     }
 
+    function requestGenBKL(count) {
+        return jsonCall(
+            'mbs/api/genBKL',
+            {
+                count: count
+            }
+        );
+    }
+    function queryBookFolders() {
+        return jsonCall(
+            'mbs/api/queryBookFolders'
+        );
+    }
+
     return {
-        call: jsonCall
+        requestGenBKL: requestGenBKL,
+        queryBookFolders: queryBookFolders
     };
 });

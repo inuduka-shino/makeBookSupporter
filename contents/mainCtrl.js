@@ -2,7 +2,9 @@
 /*global md */
 md(function (modules) {
     'use strict';
-    var requestGenBKL = modules.requestGenBKL.call;
+    var queryBookFolders = modules.jsonCall.queryBookFolders,
+        requestGenBKL = modules.jsonCall.requestGenBKL;
+
     modules.genBKLCtrl.progress(function (count) {
         var req;
         console.log('count=' + count);
@@ -10,6 +12,10 @@ md(function (modules) {
         req.done(function () {
             console.log('create gen BK list.');
         });
+    });
+
+    queryBookFolders().progress(function () {
+        console.log('queryBookFolders.');
     });
 });
 
