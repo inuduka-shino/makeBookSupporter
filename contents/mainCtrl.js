@@ -3,7 +3,8 @@
 md(function (modules) {
     'use strict';
     var queryBookFolders = modules.jsonCall.queryBookFolders,
-        requestGenBKL = modules.jsonCall.requestGenBKL;
+        requestGenBKL = modules.jsonCall.requestGenBKL,
+        fileListCtrl = modules.fileListCtrl;
 
     modules.genBKLCtrl.progress(function (count) {
         var req;
@@ -14,8 +15,15 @@ md(function (modules) {
         });
     });
 
-    queryBookFolders().progress(function () {
-        console.log('queryBookFolders.');
+    queryBookFolders().done(function (response) {
+        //console.log('queryBookFolders.');
+
+        //fileListCtrl.add('test');
+        //fileListCtrl.add('テスト', 'gray');
+        response.folders.forEach(function (folder) {
+            fileListCtrl.add(folder.name);
+        });
+
     });
 });
 

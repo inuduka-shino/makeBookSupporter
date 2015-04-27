@@ -3,23 +3,18 @@
 module.exports = (function () {
     'use strict';
     var
+        deferred = require('jquery-deferred').Deferred,
         genBooklogFolderCtrl = require('../booklog/apiInterface'),
-        genBooklogFolder = genBooklogFolderCtrl();
+        genBooklogFolder = genBooklogFolderCtrl(),
+        queryBookFolders = require('./bookFolders').query;
 
-    function driver(reqType, param) {
-        if (reqType === 'genBKL') {
-            genBooklogFolder.genFolder(param.count);
-            return {
-                status: 'OK'
-            };
-        }
-        throw new Error('unkown reqType:' + reqType);
-    }
     function driverAsync(reqType, param) {
         var ret;
-        //console.log('ajax driver');
-        //console.log(reqType);
-        //console.log(param);
+        /*
+        console.log('ajax driver');
+        console.log(reqType);
+        console.log(param);
+        */
         if (reqType === 'genBKL') {
             ret = genBooklogFolder.genFolderAsync(param.count)
                 .then(function () {
@@ -34,6 +29,26 @@ module.exports = (function () {
                 })
                 .promise();
             return ret;
+        }
+        if (reqType === 'queryBookFolders') {
+            return queryBookFolders()
+                .then(function (folders) {
+
+                    return {
+                        status: 'OK',
+                        folders: folders
+                    };
+
+                });
+        }
+        throw new Error('unkown reqType:' + reqType);
+    }
+    function driver(reqType, param) {
+        if (reqType === 'genBKL') {
+            genBooklogFolder.genFolder(param.count);
+            return {
+                status: 'OK'
+            };
         }
         throw new Error('unkown reqType:' + reqType);
     }
