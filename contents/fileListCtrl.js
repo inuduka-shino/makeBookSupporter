@@ -5,13 +5,18 @@ md('fileListCtrl', function () {
     var $fileList = $('#fileListItem'),
         $template = $($fileList.html());
 
-    function add(name, className) {
+    function add(item) {
         var $item = $template.clone(),
             $icon =  $item.children('span.glyphicon'),
-            $folderName = $item.children('span.folderName');
+            $folderName = $item.children('span.folderName'),
+
+            name = item.name,
+            type = item.type;
 
         $folderName.text(name);
-        $icon.addClass(className);
+        if (type === 'folder' || type === 'file') {
+            $icon.addClass('gray');
+        }
         $fileList.before($item);
     }
     return {
