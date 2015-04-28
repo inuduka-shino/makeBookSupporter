@@ -8,9 +8,12 @@ module.exports = (function () {
         genBooklogFolder = genBooklogFolderCtrl(),
         bookFoldersCntrl = require('./bookFolders'),
         queryBookFolders = bookFoldersCntrl.query,
+        jpgFilesCntrl = require('./jpgFiles'),
+        queryJpgFiles = jpgFilesCntrl.query,
         bookFolderBasePath = require('../setting/setting_booklog').basePath;
 
     bookFoldersCntrl.init(bookFolderBasePath);
+    jpgFilesCntrl.init(bookFolderBasePath);
 
     function driverAsync(reqType, param) {
         var ret;
@@ -44,6 +47,26 @@ module.exports = (function () {
                     };
 
                 });
+        }
+        if (reqType === 'queryJpgFiles') {
+            return queryJpgFiles(param.name)
+                .then(function (files) {
+                    return {
+                        status: 'OK',
+                        files: files
+                    };
+
+                });
+        }
+        if (reqType === 'sample') {
+            return deferred().resolve({
+                status: 'OK',
+                data: [
+                    {name: 'a-1'},
+                    {name: 'a-2'},
+                    {name: 'a-3'}
+                ]
+            });
         }
         throw new Error('unkown reqType:' + reqType);
     }

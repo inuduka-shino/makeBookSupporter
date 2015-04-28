@@ -4,9 +4,20 @@ md(function (modules) {
     'use strict';
     var queryBookFolders = modules.jsonCall.queryBookFolders,
         requestGenBKL = modules.jsonCall.requestGenBKL,
+        queryJpgFiles = modules.jsonCall.queryJpgFiles,
         genBKLCtrl = modules.genBKLCtrl,
         folderListCtrl = modules.folderListCtrl,
         fileListCtrl = modules.fileListCtrl;
+
+    function clickFolderHandler(fileInfo) {
+        //console.log(folder.name);
+        genBKLCtrl.hide();
+        folderListCtrl.hide();
+        fileListCtrl.show(fileInfo);
+        queryJpgFiles(fileInfo.name).done(function (response) {
+            fileListCtrl.addFiles(response.files);
+        });
+    }
 
     queryBookFolders().done(function (response) {
         response.folders.forEach(function (folder) {
@@ -20,12 +31,7 @@ md(function (modules) {
             } else {
                 fileInfo.type = "file";
             }
-            folderListCtrl.add(fileInfo, function () {
-                console.log(folder.name);
-                genBKLCtrl.hide();
-                folderListCtrl.hide();
-                fileListCtrl.show(fileInfo);
-            });
+            folderListCtrl.add(fileInfo, clickFolderHandler.bind(null, fileInfo));
         });
     });
 

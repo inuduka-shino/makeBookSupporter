@@ -68,8 +68,17 @@ md('jsonCall', function () {
         });
     }
 
+    function queryJpgFiles(foldername) {
+        return jsonCall(
+            'mbs/api/queryJpgFiles',
+            {
+                name: foldername
+            }
+        );
+    }
     return {
         requestGenBKL: requestGenBKL,
-        queryBookFolders: queryBookFolders
+        queryBookFolders: queryBookFolders,
+        queryJpgFiles: queryJpgFiles
     };
 });
