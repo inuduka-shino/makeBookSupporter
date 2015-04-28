@@ -73,5 +73,15 @@ md('genBKLCtrl', function () {
         ctrlCount.up();
     });
 
-    return dfrBtn.promise();
+    function show() {
+        $panel.show();
+    }
+    function hide() {
+        $panel.hide();
+    }
+
+    return dfrBtn.promise({
+        show: show,
+        hide: hide
+    });
 });

@@ -69,16 +69,31 @@
                 <div class="list-group">
                     <template id="folderListItemTemplate">
                       <a href="#" class="list-group-item">
-                          <span class="glyphicon glyphicon-folder-open" aria-hidden="true"></span>
+                          <span class="glyphicon glyphicon-folder-open golden" aria-hidden="true"></span>
                           <span class="folderName">folder name</span>
                       </a>
                     </template>
                 </div>
             </div>
         </div>
-        <div class="panel panel-default mbs-filexxxlist-ctrl">
-            ファイル一覧
-        </div>
+
+        <div class="panel panel-info mbs-file-list-ctrl">
+            <div class="panel-heading">
+                <span class="glyphicon glyphicon-folder-open folderIcon golden" aria-hidden="true"></span>
+                <span class="folderName">folder name</span>
+                <button class="btn btn-info pull-right mbs-back-btn">
+                    <span class="glyphicon glyphicon-eject" aria-hidden="false"></span>戻る
+                </button>
+            </div>
+            <div class="panel-body">
+                <div class="list-group">
+                      <a href="#" class="list-group-item">
+                          <span class="glyphicon glyphicon-file" aria-hidden="true"></span>
+                          <span class="folderName">file name</span>
+                      </a>
+                </div>
+            </div>
+         </div>
     </div>
 
     <script src="/pub/lib/jquery/jquery-2.1.1.min.js"></script>
@@ -89,6 +104,7 @@
 
     <script src="/mbs/genBKLCtrl.js"></script>
 
+    <script src="/mbs/folderListCtrl.js"></script>
     <script src="/mbs/fileListCtrl.js"></script>
 
     <script src="/mbs/mainCtrl.js"></script>

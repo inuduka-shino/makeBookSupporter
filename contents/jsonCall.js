@@ -24,10 +24,48 @@ md('jsonCall', function () {
             }
         );
     }
+    function compUndefined(a, b) {
+        if (a === undefined) {
+            if (b === undefined) {
+                return 0;
+            }
+            return 1;
+        }
+        if (b === undefined) {
+            return -1;
+        }
+        if (a === b) {
+            return 0;
+        }
+        if (typeof a === 'boolean' && typeof b === 'boolean') {
+            return (a < b) ? 1 : -1;
+        }
+        return (a > b) ? 1 : -1;
+    }
+
     function queryBookFolders() {
         return jsonCall(
             'mbs/api/queryBookFolders'
-        );
+        ).then(function (response) {
+            response.folders = response.folders.sort(function (a, b) {
+                var cmpXinfo = compUndefined(a.isXinfo, b.isXinfo),
+                    cmpFolder;
+
+                if (cmpXinfo !== 0) {
+                    return cmpXinfo;
+                }
+                cmpFolder = compUndefined(a.isFolder, b.isFolder);
+                if (cmpFolder !== 0) {
+                    return cmpFolder;
+                }
+                if (a.name === b.name) {
+                    return 0;
+                }
+                return (a.name > b.name) ? 1 : -1;
+
+            });
+            return response;
+        });
     }
 
     return {

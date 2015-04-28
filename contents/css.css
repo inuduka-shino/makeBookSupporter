@@ -1,10 +1,15 @@
 div.mbs-folder-list-ctrl div.list-group a.list-group-item > span.folderName {
     margin-left:    5px;
 }
-div.mbs-folder-list-ctrl div.list-group a.list-group-item > span.glyphicon {
+div.mbs-folder-list-ctrl div.list-group a.list-group-item > span.glyphicon.golden {
     color: Goldenrod
 }
-div.mbs-folder-list-ctrl div.list-group a.list-group-item > span.glyphicon.gray {
-    color: #555;
+div.mbs-file-list-ctrl div.panel-heading > span.glyphicon.golden {
+    color: Goldenrod
 }
-
+div.mbs-file-list-ctrl div.panel-heading > span.folderName {
+    margin-left:    5px;
+}
+div.mbs-file-list-ctrl div.panel-heading > button.mbs-back-btn {
+    padding: 2px;
+}

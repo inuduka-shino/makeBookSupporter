@@ -2,30 +2,46 @@
 /*global $, md */
 md('fileListCtrl', function () {
     'use strict';
-    var $folderList = $('#folderListItemTemplate'),
-        $template = $($folderList.html());
+    var $panel = $('div.panel.mbs-file-list-ctrl'),
+        $backBtn = $('button.mbs-back-btn', $panel),
+        $titleIcon = $('div.panel-heading span.folderIcon', $panel),
+        $title = $('div.panel-heading span.folderName', $panel);
 
-    function add(item) {
-        var $item = $template.clone(),
-            $icon =  $item.children('span.glyphicon'),
-            $folderName = $item.children('span.folderName'),
+    function hide() {
+        $panel.hide();
+    }
+    function show(info) {
+        var name = info.name,
+            type = info.type;
 
-            name = item.name,
-            type = item.type;
-
-        $folderName.text(name);
+        $title.text(name);
         if (type === 'folder' || type === 'file') {
-            $icon.addClass('gray');
+            $titleIcon.removeClass('golden');
+        } else {
+            $titleIcon.addClass('golden');
         }
         if (type === 'file') {
-            $icon
+            $titleIcon
                 .removeClass('glyphicon-folder-open')
                 .addClass('glyphicon-file');
+        } else {
+            $titleIcon
+                .removeClass('glyphicon-file')
+                .addClass('glyphicon-folder-open');
         }
 
-        $folderList.before($item);
+        $panel.show();
     }
+
+
+    hide();
+
     return {
-        add: add
+        hide: hide,
+        show: show,
+        clickBack: function (handler) {
+            $backBtn.on('click', handler);
+        }
     };
+
 });
