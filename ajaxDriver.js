@@ -6,7 +6,11 @@ module.exports = (function () {
         deferred = require('jquery-deferred').Deferred,
         genBooklogFolderCtrl = require('../booklog/apiInterface'),
         genBooklogFolder = genBooklogFolderCtrl(),
-        queryBookFolders = require('./bookFolders').query;
+        bookFoldersCntrl = require('./bookFolders'),
+        queryBookFolders = bookFoldersCntrl.query,
+        bookFolderBasePath = require('../setting/setting_booklog').basePath;
+
+    bookFoldersCntrl.init(bookFolderBasePath);
 
     function driverAsync(reqType, param) {
         var ret;
