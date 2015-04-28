@@ -2,8 +2,8 @@
 /*global $, md */
 md('fileListCtrl', function () {
     'use strict';
-    var $fileList = $('#fileListItem'),
-        $template = $($fileList.html());
+    var $folderList = $('#folderListItemTemplate'),
+        $template = $($folderList.html());
 
     function add(item) {
         var $item = $template.clone(),
@@ -17,7 +17,13 @@ md('fileListCtrl', function () {
         if (type === 'folder' || type === 'file') {
             $icon.addClass('gray');
         }
-        $fileList.before($item);
+        if (type === 'file') {
+            $icon
+                .removeClass('glyphicon-folder-open')
+                .addClass('glyphicon-file');
+        }
+
+        $folderList.before($item);
     }
     return {
         add: add
