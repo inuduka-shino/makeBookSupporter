@@ -10,8 +10,6 @@ md('fileListCtrl', function () {
         $template = $($fileList.html()),
         $listBox = $fileList.parent();
 
-
-
     function hide() {
         $panel.hide();
     }
@@ -34,20 +32,29 @@ md('fileListCtrl', function () {
                 .removeClass('glyphicon-file')
                 .addClass('glyphicon-folder-open');
         }
-        $listBox.empty();
         $panel.show();
     }
     function addFile(fileInfo) {
         var $item = $template.clone(),
             $filename = $('span.fileName', $item);
-        $filename.text(fileInfo.name);
+        if (fileInfo.type === 'no data') {
+            $filename.text('no data');
+        } else {
+            $filename.text(fileInfo.name);
+        }
         $listBox.append($item);
     }
 
-    function addFiles(files) {
+    function setFiles(files) {
+        $listBox.empty();
         files.forEach(function (file) {
             addFile(file);
         });
+        if (files.length === 0) {
+            addFile({
+                type: 'no data'
+            });
+        }
     }
 
     hide();
@@ -58,7 +65,7 @@ md('fileListCtrl', function () {
         clickBack: function (handler) {
             $backBtn.on('click', handler);
         },
-        addFiles: addFiles
+        setFiles: setFiles
     };
 
 });

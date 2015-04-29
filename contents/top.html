@@ -7,7 +7,7 @@
     <title>MakeBookSupporter</title>
 
     <!-- Bootstrap -->
-    <link href="/pub/lib/bootstrap/bootstrap-3.3.1-dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/pub/lib/bootstrap/bootstrap-3.3.4-dist/css/bootstrap.min.css" rel="stylesheet">
 
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -43,6 +43,7 @@
 
       </div>
     </nav>
+
 
     <div class="container-fluid">
         <div class="panel panel-default mbs-gbl-ctrl">
@@ -87,6 +88,14 @@
             </div>
             <div class="panel-body">
                 <div class="list-group">
+                    <template id="categoryItemTemplate">
+                      <a href="#" class="list-group-item">
+                          <span class="glyphicon glyphicon-pawn" aria-hidden="true"></span>
+                          <span class="categoryName">category name</span>
+                      </a>
+                    </template>
+                </div>
+                <div class="list-group">
                     <template id="fileListItemTemplate">
                       <a href="#" class="list-group-item">
                           <span class="glyphicon glyphicon-file" aria-hidden="true"></span>
@@ -99,15 +108,16 @@
     </div>
 
     <script src="/pub/lib/jquery/jquery-2.1.1.min.js"></script>
-    <script src="/pub/lib/bootstrap/bootstrap-3.3.1-dist/js/bootstrap.min.js"></script>
+    <script src="/pub/lib/bootstrap/bootstrap-3.3.4-dist/js/bootstrap.min.js"></script>
 
     <script src="/mbs/module.js"></script>
     <script src="/mbs/jsonCall.js"></script>
 
+    <script src="/mbs/categoryManager.js"></script>
     <script src="/mbs/genBKLCtrl.js"></script>
-
     <script src="/mbs/folderListCtrl.js"></script>
     <script src="/mbs/fileListCtrl.js"></script>
+    <script src="/mbs/categoryListCtrl.js"></script>
 
     <script src="/mbs/mainCtrl.js"></script>
   </body>
