@@ -33,6 +33,9 @@ md('categoryManager', function () {
         function ctgCount(ctgSelf) {
             return ctgSelf.pool.length;
         }
+        function ctgFiles(ctgSelf) {
+            return ctgSelf.pool;
+        }
 
         return function (ctgmSelf, catCode) {
             var pool = ctgmSelf.categoryPool[catCode],
@@ -44,8 +47,9 @@ md('categoryManager', function () {
 
 
             return {
-                forEach: ctgForEach.bind(null, ctgSelf),
                 count: ctgCount.bind(null, ctgSelf),
+                files: ctgFiles.bind(null, ctgSelf),
+                forEach: ctgForEach.bind(null, ctgSelf),
                 name: function () {
                     return categoryDict[catCode].name;
                 }

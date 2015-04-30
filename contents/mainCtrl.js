@@ -20,7 +20,8 @@ md(function (modules) {
             var ctg = categorySet.getCategory(catCode);
             return {
                 name: ctg.name(),
-                count: ctg.count()
+                count: ctg.count(),
+                files: ctg.files()
             };
         });
 
@@ -32,8 +33,15 @@ md(function (modules) {
         queryJpgFiles(fileInfo.name).done(function (response) {
             var categorySet = genCategoryManager(response.files);
 
-            categoryListCtrl.setCategorys(makeCategorysInfo(categorySet));
-            //fileListCtrl.setFiles(response.files);
+            categoryListCtrl.setCategorys(
+                makeCategorysInfo(categorySet),
+                function (ctgInfo) {
+                    fileListCtrl.setFiles(ctgInfo.files);
+                }
+            );
+            /*
+            categoryListCtrl.clickCategoryItem();
+            */
         });
 
         // TODO loading... message

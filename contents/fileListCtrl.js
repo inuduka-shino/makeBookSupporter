@@ -10,35 +10,13 @@ md('fileListCtrl', function () {
         $template = $($fileList.html()),
         $listBox = $fileList.parent();
 
-    function hide() {
-        $panel.hide();
-    }
-    function show(info) {
-        var name = info.name,
-            type = info.type;
-
-        $title.text(name);
-        if (type === 'folder' || type === 'file') {
-            $titleIcon.removeClass('golden');
-        } else {
-            $titleIcon.addClass('golden');
-        }
-        if (type === 'file') {
-            $titleIcon
-                .removeClass('glyphicon-folder-open')
-                .addClass('glyphicon-file');
-        } else {
-            $titleIcon
-                .removeClass('glyphicon-file')
-                .addClass('glyphicon-folder-open');
-        }
-        $panel.show();
-    }
-    function addFile(fileInfo) {
+  　 function addFile(fileInfo) {
         var $item = $template.clone(),
             $filename = $('span.fileName', $item);
         if (fileInfo.type === 'no data') {
             $filename.text('no data');
+        } else if (fileInfo.type === 'no select') {
+            $filename.text('no select');
         } else {
             $filename.text(fileInfo.name);
         }
@@ -56,6 +34,38 @@ md('fileListCtrl', function () {
             });
         }
     }
+
+    function hide() {
+        $panel.hide();
+    }
+    function show(info) {
+        var name = info.name,
+            type = info.type;
+
+        // title部分
+        $title.text(name);
+        if (type === 'folder' || type === 'file') {
+            $titleIcon.removeClass('golden');
+        } else {
+            $titleIcon.addClass('golden');
+        }
+        if (type === 'file') {
+            $titleIcon
+                .removeClass('glyphicon-folder-open')
+                .addClass('glyphicon-file');
+        } else {
+            $titleIcon
+                .removeClass('glyphicon-file')
+                .addClass('glyphicon-folder-open');
+        }
+
+        $listBox.empty();
+        addFile({
+            type: 'no select'
+        });
+        $panel.show();
+    }
+
 
     hide();
 
