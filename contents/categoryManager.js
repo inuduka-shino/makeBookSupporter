@@ -31,7 +31,7 @@ md('categoryManager', function () {
         }
 
         function ctgCount(ctgSelf) {
-            return ctgSelf.pool.count();
+            return ctgSelf.pool.length;
         }
 
         return function (ctgmSelf, catCode) {
@@ -44,8 +44,8 @@ md('categoryManager', function () {
 
 
             return {
-                forEach: ctgForEach.bind(ctgSelf),
-                count: ctgCount.bind(ctgSelf),
+                forEach: ctgForEach.bind(null, ctgSelf),
+                count: ctgCount.bind(null, ctgSelf),
                 name: function () {
                     return categoryDict[catCode].name;
                 }
@@ -109,7 +109,7 @@ md('categoryManager', function () {
             return {
                 addFileInfos: addFileInfos.bind(null, ctgmSelf),
                 getCategoryCodeList: getCategoryCodeList.bind(null, ctgmSelf),
-                //getCategory: getCategory.bind(null, ctgmSelf),
+                getCategory: getCategory.bind(null, ctgmSelf),
             };
         }
 
@@ -122,9 +122,9 @@ md('categoryManager', function () {
     }());
 
     return {
-        genCategoryManager: genCategoryManager,
-        getCategoryName: function (catCode) {
-            return categoryDict[catCode].name;
-        }
+        genCategoryManager: genCategoryManager
+        //getCategoryName: function (catCode) {
+        //    return categoryDict[catCode].name;
+        //}
     };
 });

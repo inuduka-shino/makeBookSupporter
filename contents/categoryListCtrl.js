@@ -12,7 +12,9 @@ md('categoryListCtrl', function () {
         $listBox.empty();
         ctgInfoList.forEach(function (ctgInfo) {
             var $item = $template.clone();
+
             $('span.categoryName', $item).text(ctgInfo.name);
+            $('span.mbs-ctg-file-count', $item).text(ctgInfo.count);
             $listBox.append($item);
         });
 

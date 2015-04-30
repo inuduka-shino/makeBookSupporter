@@ -11,16 +11,16 @@ md(function (modules) {
         fileListCtrl = modules.fileListCtrl,
         categoryListCtrl = modules.categoryListCtrl,
 
-        genCategoryManager = modules.categoryManager.genCategoryManager,
-        getCategoryName = modules.categoryManager.getCategoryName;
+        genCategoryManager = modules.categoryManager.genCategoryManager;
 
     function makeCategorysInfo(categorySet) {
         var codeList = categorySet.getCategoryCodeList();
 
         return codeList.map(function (catCode) {
+            var ctg = categorySet.getCategory(catCode);
             return {
-                name: getCategoryName(catCode),
-                count: 0
+                name: ctg.name(),
+                count: ctg.count()
             };
         });
 
@@ -28,17 +28,18 @@ md(function (modules) {
 
     // BookFolderクリック
     function clickFolderHandler(fileInfo) {
-        //console.log(folder.name);
-        genBKLCtrl.hide();
-        folderListCtrl.hide();
-        fileListCtrl.show(fileInfo);
-
+        // load files info
         queryJpgFiles(fileInfo.name).done(function (response) {
             var categorySet = genCategoryManager(response.files);
 
             categoryListCtrl.setCategorys(makeCategorysInfo(categorySet));
-            fileListCtrl.setFiles(response.files);
+            //fileListCtrl.setFiles(response.files);
         });
+
+        // TODO loading... message
+        genBKLCtrl.hide();
+        folderListCtrl.hide();
+        fileListCtrl.show(fileInfo);
     }
 
     // BookFolder情報取得＆描画
