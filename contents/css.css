@@ -15,3 +15,8 @@ div.mbs-file-list-ctrl button.mbs-back-btn {
     margin-top: -5px;
     margin-bottom: 10px;
 }
+div.mbs-file-list-ctrl div.mbs-scrollbox {
+    max-height: 300px;
+    overflow-y: auto;
+}
+
