@@ -18,6 +18,7 @@ md('fileListCtrl', function () {
         } else if (fileInfo.type === 'no select') {
             $filename.text('no select');
         } else {
+            $item.addClass('list-group-item-info');
             $filename.text(fileInfo.name);
         }
         $listBox.append($item);
