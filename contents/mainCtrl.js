@@ -14,6 +14,8 @@ md(function (modules) {
         genCategoryManager = modules.categoryManager.genCategoryManager,
         categoryDict = modules.categoryManager.categoryDict;
 
+
+    // category情報
     function makeCategorysInfo(categorySet) {
         var codeList = categorySet.getCategoryCodeList();
 
