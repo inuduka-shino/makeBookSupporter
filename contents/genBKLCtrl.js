@@ -1,6 +1,6 @@
 /*jslint indent: 4 */
 /*global $, md */
-md('genBKLCtrl', function () {
+md('genBKLCtrl', function (modules) {
     'use strict';
     var $panel = $('div.mbs-gbl-ctrl'),
         ctrlPlusMinus = (function () {
@@ -49,6 +49,14 @@ md('genBKLCtrl', function () {
             return dfr.promise();
         }()),
         dfrBtn = $.Deferred();
+
+    (function () {
+        var $bklogLink = $('a.mbs-bklog-link', $panel);
+        modules.setting.done(function (setting) {
+            $bklogLink.attr('href', setting.bklogUrl);
+        });
+    }());
+
 
     (function () {
         var $form = $('form', $panel);

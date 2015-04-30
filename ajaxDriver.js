@@ -10,7 +10,8 @@ module.exports = (function () {
         queryBookFolders = bookFoldersCntrl.query,
         jpgFilesCntrl = require('./jpgFiles'),
         queryJpgFiles = jpgFilesCntrl.query,
-        bookFolderBasePath = require('../setting/setting_booklog').basePath;
+        bookFolderBasePath = require('../setting/setting_booklog').basePath,
+        localSetting = require('../setting/setting_booklog').local;
 
     bookFoldersCntrl.init(bookFolderBasePath);
     jpgFilesCntrl.init(bookFolderBasePath);
@@ -22,6 +23,9 @@ module.exports = (function () {
         console.log(reqType);
         console.log(param);
         */
+        if (reqType === 'setting') {
+            return deferred().resolve(localSetting);
+        }
         if (reqType === 'genBKL') {
             ret = genBooklogFolder.genFolderAsync(param.count)
                 .then(function () {

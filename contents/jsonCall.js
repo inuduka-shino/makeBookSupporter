@@ -16,6 +16,12 @@ md('jsonCall', function () {
         return jqXHR;
     }
 
+    function loadSetting() {
+        return jsonCall(
+            'mbs/api/setting'
+        );
+    }
+
     function requestGenBKL(count) {
         return jsonCall(
             'mbs/api/genBKL',
@@ -77,6 +83,7 @@ md('jsonCall', function () {
         );
     }
     return {
+        loadSetting: loadSetting,
         requestGenBKL: requestGenBKL,
         queryBookFolders: queryBookFolders,
         queryJpgFiles: queryJpgFiles
