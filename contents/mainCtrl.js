@@ -11,17 +11,20 @@ md(function (modules) {
         fileListCtrl = modules.fileListCtrl,
         categoryListCtrl = modules.categoryListCtrl,
 
-        genCategoryManager = modules.categoryManager.genCategoryManager;
+        genCategoryManager = modules.categoryManager.genCategoryManager,
+        categoryDict = modules.categoryManager.categoryDict;
 
     function makeCategorysInfo(categorySet) {
         var codeList = categorySet.getCategoryCodeList();
 
         return codeList.map(function (catCode) {
-            var ctg = categorySet.getCategory(catCode);
+            var ctg = categorySet.getCategory(catCode),
+                ctgInfo = categoryDict(catCode);
             return {
-                name: ctg.name(),
                 count: ctg.count(),
-                files: ctg.files()
+                files: ctg.files(),
+                name: ctgInfo.name,
+                extClass: ctgInfo.extClass,
             };
         });
 

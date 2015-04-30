@@ -7,13 +7,14 @@ md('categoryManager', function () {
         genCategoryManager;
 
     categoryDict = {
+        'unknown': {
+            priority: 10,
+            name: 'Unknown',
+            extClass: 'list-group-item-warning'
+        },
         'info': {
             priority: 900,
             name: 'information file(xinfo.txt)'
-        },
-        'unknown': {
-            priority: 999,
-            name: 'Unknown'
         }
     };
 
@@ -49,10 +50,7 @@ md('categoryManager', function () {
             return {
                 count: ctgCount.bind(null, ctgSelf),
                 files: ctgFiles.bind(null, ctgSelf),
-                forEach: ctgForEach.bind(null, ctgSelf),
-                name: function () {
-                    return categoryDict[catCode].name;
-                }
+                forEach: ctgForEach.bind(null, ctgSelf)
             };
         };
     }());
@@ -126,9 +124,9 @@ md('categoryManager', function () {
     }());
 
     return {
-        genCategoryManager: genCategoryManager
-        //getCategoryName: function (catCode) {
-        //    return categoryDict[catCode].name;
-        //}
+        genCategoryManager: genCategoryManager,
+        categoryDict: function (catCode) {
+            return categoryDict[catCode];
+        }
     };
 });

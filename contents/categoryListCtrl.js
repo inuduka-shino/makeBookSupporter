@@ -15,6 +15,9 @@ md('categoryListCtrl', function () {
 
             $('span.categoryName', $item).text(ctgInfo.name);
             $('span.mbs-ctg-file-count', $item).text(ctgInfo.count);
+            if (ctgInfo.extClass !== undefined) {
+                $item.addClass(ctgInfo.extClass);
+            }
             $item.on('click', clickHandler.bind(null, ctgInfo));
             $listBox.append($item);
         });
