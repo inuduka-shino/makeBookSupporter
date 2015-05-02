@@ -16,7 +16,7 @@ module.exports = (function () {
     router.use(/\//, function (req, res) {
         unuseVars(req);
         //console.log('makeBookSupporter web server top page.');
-        res.sendFile(__dirname + '/contents/top.html');
+        res.sendFile(__dirname + '/contents/view.html');
     });
 
     router.use('/api/:ajaxtype(*)', function (req, res) {

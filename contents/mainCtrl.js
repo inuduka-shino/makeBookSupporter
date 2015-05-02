@@ -1,18 +1,22 @@
 /*jslint indent: 4 */
-/*global md */
+/*global md, $ */
 md(function (modules) {
     'use strict';
     var queryBookFolders = modules.jsonCall.queryBookFolders,
         requestGenBKL = modules.jsonCall.requestGenBKL,
         queryJpgFiles = modules.jsonCall.queryJpgFiles,
 
-        genBKLCtrl = modules.genBKLCtrl,
-        folderListCtrl = modules.folderListCtrl,
-        fileListCtrl = modules.fileListCtrl,
-        categoryListCtrl = modules.categoryListCtrl,
+        viewContainer = modules.viewContainer,
+        viewBKLog = modules.viewBKLog,
+        viewBookFolder = modules.viewBookFolder,
+        viewFilePanel = modules.viewFilePanel,
+        viewFileList = modules.viewFileList,
+        viewCategoryList = modules.viewCategoryList,
+        viewZipButton = modules.viewZipButton,
 
         genCategoryManager = modules.categoryManager.genCategoryManager,
         categoryDict = modules.categoryManager.categoryDict;
+
 
 
     // category情報
@@ -38,10 +42,10 @@ md(function (modules) {
         queryJpgFiles(fileInfo.name).done(function (response) {
             var categorySet = genCategoryManager(response.files);
 
-            categoryListCtrl.setCategorys(
+            viewCategoryList.setCategorys(
                 makeCategorysInfo(categorySet),
                 function (ctgInfo) {
-                    fileListCtrl.setFiles(ctgInfo.files);
+                    viewFileList.setFiles(ctgInfo.files);
                 }
             );
             /*
@@ -50,44 +54,56 @@ md(function (modules) {
         });
 
         // TODO loading... message
-        genBKLCtrl.hide();
-        folderListCtrl.hide();
-        fileListCtrl.show(fileInfo);
+        viewFilePanel.setTitle(fileInfo);
+        viewFileList.clearFiles();
+        viewContainer.change('fileList');
     }
 
     // BookFolder情報取得＆描画
-    queryBookFolders().done(function (response) {
-        response.folders.forEach(function (folder) {
-            var fileInfo = {
-                    name: folder.name
-                };
-            if (folder.isXinfo) {
-                fileInfo.type = "bookFolder";
-            } else if (folder.isFolder) {
-                fileInfo.type = "folder";
-            } else {
-                fileInfo.type = "file";
-            }
-            folderListCtrl.add(fileInfo, clickFolderHandler.bind(null, fileInfo));
+    function redrawFolderView() {
+        queryBookFolders().done(function (response) {
+            viewBookFolder.clear();
+            response.folders.forEach(function (folder) {
+                var fileInfo = {
+                        name: folder.name
+                    };
+                if (folder.isXinfo) {
+                    fileInfo.type = "bookFolder";
+                } else if (folder.isFolder) {
+                    fileInfo.type = "folder";
+                } else {
+                    fileInfo.type = "file";
+                }
+                viewBookFolder.add(fileInfo, clickFolderHandler.bind(null, fileInfo));
+            });
         });
-    });
+    }
 
-    // ファイルリスト　戻る　ボタン
-    fileListCtrl.clickBack(function () {
-        fileListCtrl.hide();
-        genBKLCtrl.show();
-        folderListCtrl.show();
+
+    // ファイルリスト　戻るボタン
+    viewFileList.clickBack(function () {
+        viewContainer.change('folderList');
+    });
+    // ファイルリスト　zipボタン
+    viewZipButton.click(function () {
+        var dfr = $.Deferred();
+        return dfr.resolve();
     });
 
     // 生成ボタンクリック
-    modules.genBKLCtrl.progress(function (count) {
+    viewBKLog.progress(function (count) {
         var req;
         console.log('count=' + count);
         req = requestGenBKL(count);
         req.done(function () {
-            console.log('create gen BK list.');
+            redrawFolderView();
         });
     });
 
+    // 初期表示
+    $(function () {
+        viewContainer.change('folderList');
+        redrawFolderView();
+    });
 });
 

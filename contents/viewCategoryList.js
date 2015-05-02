@@ -1,6 +1,6 @@
 /*jslint indent: 4 */
 /*global $, md */
-md('categoryListCtrl', function () {
+md('viewCategoryList', function () {
     'use strict';
     var
         $panel = $('div.panel.mbs-file-list-ctrl'),

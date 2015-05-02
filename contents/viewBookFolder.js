@@ -1,11 +1,15 @@
 /*jslint indent: 4 */
 /*global $, md */
-md('folderListCtrl', function () {
+md('viewBookFolder', function () {
     'use strict';
     var $panel = $('div.panel.mbs-folder-list-ctrl'),
-        $folderList = $('#folderListItemTemplate'),
-        $template = $($folderList.html());
+        $folderList = $('template#folderListItemTemplate', $panel),
+        $template = $($folderList.html()),
+        $listbox = $folderList.parent();
 
+    function clear() {
+        $listbox.empty();
+    }
 
     function add(info, handler) {
         var $item = $template.clone(),
@@ -29,15 +33,14 @@ md('folderListCtrl', function () {
             $item.on('click', handler.bind(null, info));
         }
 
-        $folderList.before($item);
+        $listbox.append($item);
     }
+    $(function () {
+        clear();
+    });
+
     return {
         add: add,
-        hide: function () {
-            $panel.hide();
-        },
-        show: function () {
-            $panel.show();
-        },
+        clear: clear
     };
 });

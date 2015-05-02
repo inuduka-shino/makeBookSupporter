@@ -11,10 +11,12 @@ module.exports = (function () {
         jpgFilesCntrl = require('./jpgFiles'),
         queryJpgFiles = jpgFilesCntrl.query,
         bookFolderBasePath = require('../setting/setting_booklog').basePath,
+        zipBookFolder = require('./zipBookFolder'),
         localSetting = require('../setting/setting_booklog').local;
 
     bookFoldersCntrl.init(bookFolderBasePath);
     jpgFilesCntrl.init(bookFolderBasePath);
+    zipBookFolder.init(bookFolderBasePath);
 
     function driverAsync(reqType, param) {
         var ret;
@@ -61,6 +63,32 @@ module.exports = (function () {
                     };
 
                 });
+        }
+        if (reqType === 'makeZipFile') {
+            return zipBookFolder.makeZipFile(param.folderName, param.files)
+                .then(function (result) {
+                    return {
+                        status: 'OK',
+                        result: result
+                    };
+
+                });
+        }
+        if (reqType === 'checkZipFile') {
+            ret = zipBookFolder.checkZipFile(param.folderName)
+                .then(function (zipCheck) {
+                    return {
+                        status: 'OK',
+                        zipCheck: zipCheck
+                    };
+                }, function (error) {
+                    console.log(error);
+                    return {
+                        status: 'ERROR'
+                    };
+                })
+                .promise();
+            return ret;
         }
         if (reqType === 'sample') {
             return deferred().resolve({

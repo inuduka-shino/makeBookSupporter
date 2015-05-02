@@ -82,10 +82,30 @@ md('jsonCall', function () {
             }
         );
     }
+    function checkZipFile(foldername) {
+        return jsonCall(
+            'mbs/api/checkZipFile',
+            {
+                foldername: foldername
+            }
+        );
+    }
+    function makeZipFile(foldername, files) {
+        return jsonCall(
+            'mbs/api/makeZipFile',
+            {
+                foldername: foldername,
+                files: files
+            }
+        );
+    }
+
     return {
         loadSetting: loadSetting,
         requestGenBKL: requestGenBKL,
         queryBookFolders: queryBookFolders,
-        queryJpgFiles: queryJpgFiles
+        queryJpgFiles: queryJpgFiles,
+        checkZipFile: checkZipFile,
+        makeZipFile: makeZipFile
     };
 });

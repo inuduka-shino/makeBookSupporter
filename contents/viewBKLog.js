@@ -1,6 +1,6 @@
 /*jslint indent: 4 */
 /*global $, md */
-md('genBKLCtrl', function (modules) {
+md('viewBKLog', function (modules) {
     'use strict';
     var $panel = $('div.mbs-gbl-ctrl'),
         ctrlPlusMinus = (function () {
