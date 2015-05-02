@@ -18,13 +18,13 @@ md('jsonCall', function () {
 
     function loadSetting() {
         return jsonCall(
-            'mbs/api/setting'
+            'api/setting'
         );
     }
 
     function requestGenBKL(count) {
         return jsonCall(
-            'mbs/api/genBKL',
+            'api/genBKL',
             {
                 count: count
             }
@@ -51,7 +51,7 @@ md('jsonCall', function () {
 
     function queryBookFolders() {
         return jsonCall(
-            'mbs/api/queryBookFolders'
+            'api/queryBookFolders'
         ).then(function (response) {
             response.folders = response.folders.sort(function (a, b) {
                 var cmpXinfo = compUndefined(a.isXinfo, b.isXinfo),
@@ -76,7 +76,7 @@ md('jsonCall', function () {
 
     function queryJpgFiles(foldername) {
         return jsonCall(
-            'mbs/api/queryJpgFiles',
+            'api/queryJpgFiles',
             {
                 name: foldername
             }
@@ -84,7 +84,7 @@ md('jsonCall', function () {
     }
     function checkZipFile(foldername) {
         return jsonCall(
-            'mbs/api/checkZipFile',
+            'api/checkZipFile',
             {
                 foldername: foldername
             }
@@ -92,7 +92,7 @@ md('jsonCall', function () {
     }
     function makeZipFile(foldername, files) {
         return jsonCall(
-            'mbs/api/makeZipFile',
+            'api/makeZipFile',
             {
                 foldername: foldername,
                 files: files
