@@ -11,11 +11,22 @@ md('viewBookFolder', function () {
         $listbox.empty();
     }
 
+    function genClickHandler(clickUserHandler) {
+        if (clickUserHandler === undefined) {
+            return undefined;
+        }
+        return function (info) {
+            clickUserHandler(info);
+            return false;
+        };
+    }
+
     function add(info, handler) {
         var $item = $template.clone(),
             $icon =  $item.children('span.glyphicon'),
             $folderName = $item.children('span.folderName'),
 
+            clickHandler = genClickHandler(handler),
             name = info.name,
             type = info.type;
 
@@ -29,8 +40,8 @@ md('viewBookFolder', function () {
                 .addClass('glyphicon-file');
             $item.addClass('disabled');
         }
-        if (handler !== undefined && type !== 'file') {
-            $item.on('click', handler.bind(null, info));
+        if (clickHandler !== undefined && type !== 'file') {
+            $item.on('click', clickHandler.bind(null, info));
         }
 
         $listbox.append($item);
