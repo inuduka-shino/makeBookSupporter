@@ -5,6 +5,7 @@ md(function (modules) {
     var queryBookFolders = modules.jsonCall.queryBookFolders,
         requestGenBKL = modules.jsonCall.requestGenBKL,
         queryJpgFiles = modules.jsonCall.queryJpgFiles,
+        checkZipFile = modules.jsonCall.checkZipFile,
 
         viewContainer = modules.viewContainer,
         viewBKLog = modules.viewBKLog,
@@ -38,8 +39,9 @@ md(function (modules) {
 
     // BookFolderクリック
     function clickFolderHandler(fileInfo) {
+        var foldername = fileInfo.name;
         // load files info
-        queryJpgFiles(fileInfo.name).done(function (response) {
+        queryJpgFiles(foldername).done(function (response) {
             var categorySet = genCategoryManager(response.files);
 
             viewCategoryList.setCategorys(
@@ -48,13 +50,19 @@ md(function (modules) {
                     viewFileList.setFiles(ctgInfo.files);
                 }
             );
-            /*
-            categoryListCtrl.clickCategoryItem();
-            */
         });
 
+        // query zipFile status
+        checkZipFile(foldername).done(function (zipFileMakable) {
+            if (zipFileMakable) {
+                viewZipButton.enable();
+            }
+        });
+
+        // fileList panel 初期化
         // TODO loading... message
         viewFilePanel.setTitle(fileInfo);
+        viewZipButton.reset();
         viewFileList.clearFiles();
         viewContainer.change('fileList');
     }
@@ -87,7 +95,8 @@ md(function (modules) {
     // ファイルリスト　zipボタン
     viewZipButton.click(function () {
         var dfr = $.Deferred();
-        return dfr.resolve();
+        //dfr.resolve();
+        return dfr.promise();
     });
 
     // 生成ボタンクリック

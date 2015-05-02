@@ -88,7 +88,14 @@ md('jsonCall', function () {
             {
                 foldername: foldername
             }
-        );
+        ).then(function (response) {
+            // return zipfile makable flag
+            var zipFileExists = response.zipCheck.exists;
+            if (zipFileExists === 'no') {
+                return true;
+            }
+            return false;
+        });
     }
     function makeZipFile(foldername, files) {
         return jsonCall(

@@ -75,7 +75,7 @@ module.exports = (function () {
                 });
         }
         if (reqType === 'checkZipFile') {
-            ret = zipBookFolder.checkZipFile(param.folderName)
+            ret = zipBookFolder.checkZipFile(param.foldername)
                 .then(function (zipCheck) {
                     return {
                         status: 'OK',

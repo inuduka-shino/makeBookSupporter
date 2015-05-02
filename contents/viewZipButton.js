@@ -12,15 +12,19 @@ md('viewZipButton', function () {
     function enable() {
         enableFlag = true;
         $zipButton.removeClass('disabled');
+        $zipButton.removeClass('btn-default');
+        $zipButton.addClass('btn-info');
     }
     function disable() {
         enableFlag = false;
         $zipButton.addClass('disabled');
+        $zipButton.removeClass('btn-info');
+        $zipButton.addClass('btn-default');
     }
     function clearClickProcess() {
         if (clickProcess !== undefined) {
             clickProcess.reject();
-            clickProcess = undefined();
+            clickProcess = undefined;
         }
     }
     function active() {
@@ -30,8 +34,9 @@ md('viewZipButton', function () {
         $zipButton.removeClass('active');
     }
     function rest() {
-        enable();
+        disable();
         clearClickProcess();
+        deactive();
     }
     $zipButton.on('click', function () {
         if (enableFlag && (clickProcess === undefined)) {
@@ -43,7 +48,10 @@ md('viewZipButton', function () {
     function click(handler) {
         clickNotify.progress(function () {
             clearClickProcess();
-            clickProcess = handler();
+            clickProcess = $.Deferred();
+            handler().done(function () {
+                clickProcess.resolve();
+            });
             clickProcess.done(function () {
                 deactive();
             });

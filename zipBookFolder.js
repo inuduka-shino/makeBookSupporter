@@ -14,7 +14,7 @@ module.exports = (function () {
     }
 
     function zipBookFilePath(folderName) {
-        return path.join(booksFolderPath, folderName);
+        return path.join(booksFolderPath, folderName + '.zip');
     }
 
     function checkZipFile(folderName) {
@@ -23,12 +23,22 @@ module.exports = (function () {
 
         fs.open(zipFilePath, 'r', function (err, fd) {
             if (err) {
-                console.log('zipCHeck:' + folderName);
-                console.log(err);
-                dfr.resolve(true);
+                // console.log('zipCHeck:' + folderName);
+                // console.log(err);
+                if (err.code === 'ENOENT') {
+                    dfr.resolve({
+                        exists: 'no'
+                    });
+                } else {
+                    dfr.resolve({
+                        exists: 'unknown'
+                    });
+                }
             } else {
                 fs.close(fd, function () {
-                    dfr.resolve(false);
+                    dfr.resolve({
+                        exists: 'yes'
+                    });
                 });
             }
         });
