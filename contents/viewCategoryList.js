@@ -8,7 +8,15 @@ md('viewCategoryList', function () {
         $template = $($categoryList.html()),
         $listBox = $categoryList.parent();
 
-    function setCategorys(ctgInfoList, clickHandler) {
+    function genClickHandler(clickUserHandler) {
+        return function (ctgInfo) {
+            clickUserHandler(ctgInfo);
+            return false;
+        };
+    }
+
+    function setCategorys(ctgInfoList, clickUserHandler) {
+        var clickHandler = genClickHandler(clickUserHandler);
         $listBox.empty();
         ctgInfoList.forEach(function (ctgInfo) {
             var $item = $template.clone();
