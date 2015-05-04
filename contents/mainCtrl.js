@@ -6,6 +6,7 @@ md(function (modules) {
         requestGenBKL = modules.jsonCall.requestGenBKL,
         queryJpgFiles = modules.jsonCall.queryJpgFiles,
         checkZipFile = modules.jsonCall.checkZipFile,
+        requestMakeZipFile = modules.jsonCall.makeZipFile,
 
         viewContainer = modules.viewContainer,
         viewBKLog = modules.viewBKLog,
@@ -16,7 +17,9 @@ md(function (modules) {
         viewZipButton = modules.viewZipButton,
 
         genCategoryManager = modules.categoryManager.genCategoryManager,
-        categoryDict = modules.categoryManager.categoryDict;
+        categoryDict = modules.categoryManager.categoryDict,
+
+        currentSelectedFileInfo;
 
 
 
@@ -43,6 +46,14 @@ md(function (modules) {
         // load files info
         queryJpgFiles(foldername).done(function (response) {
             var categorySet = genCategoryManager(response.files);
+
+            currentSelectedFileInfo = {
+                name: fileInfo.name,
+                type: fileInfo.type,
+                files: response.files.map(function (fileInfo) {
+                    return fileInfo.name;
+                })
+            };
 
             viewCategoryList.setCategorys(
                 makeCategorysInfo(categorySet),
@@ -90,12 +101,20 @@ md(function (modules) {
 
     // ファイルリスト　戻るボタン
     viewFileList.clickBack(function () {
+        currentSelectedFileInfo = undefined;
         viewContainer.change('folderList');
     });
     // ファイルリスト　zipボタン
     viewZipButton.click(function () {
-        var dfr = $.Deferred();
-        //dfr.resolve();
+        var dfr = $.Deferred(),
+            name = currentSelectedFileInfo.name,
+            files = currentSelectedFileInfo.files;
+        requestMakeZipFile(name, files).done(function (makeZipFileResult) {
+            dfr.resolve();
+            if (makeZipFileResult === 'ok') {
+                viewZipButton.disable();
+            }
+        });
         return dfr.promise();
     });
 
