@@ -108,7 +108,10 @@ module.exports = (function () {
                 fullpathList = filesStatus.fullpathList;
                 //console.log(zipFilePath);
                 //console.log(zipFolderPath);
-                zipFile = new Zip({file: zipFilePath});
+                zipFile = new Zip({
+                    root: '/',
+                    file: zipFilePath
+                });
                 fullpathList.forEach(function (filepath) {
                     var addDfr = deferred();
                     addFileDfrList.push(addDfr);
@@ -117,7 +120,8 @@ module.exports = (function () {
                         filepath,
                         function () {
                             addDfr.resolve();
-                        }
+                        },
+                        ''
                     );
                 });
                 when.apply(null, addFileDfrList).done(function () {
