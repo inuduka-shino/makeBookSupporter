@@ -56,16 +56,16 @@ module.exports = (function () {
         }
         if (reqType === 'queryJpgFiles') {
             return queryJpgFiles(param.name)
-                .then(function (files) {
+                .then(function (result) {
                     return {
                         status: 'OK',
-                        files: files
+                        files: result.files
                     };
 
                 });
         }
         if (reqType === 'makeZipFile') {
-            return zipBookFolder.makeZipFile(param.folderName, param.files)
+            return zipBookFolder.makeZipFile(param.foldername, param.files)
                 .then(function (result) {
                     return {
                         status: 'OK',

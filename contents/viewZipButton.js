@@ -59,7 +59,6 @@ md('viewZipButton', function () {
     }
 
     return {
-
         enable: enable,
         diable: disable,
         reset: rest,

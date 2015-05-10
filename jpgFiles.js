@@ -19,11 +19,14 @@ module.exports = (function () {
             folderPath = path.join(booksFolderPath, foldername);
         fs.readdir(folderPath, function (err, files) {
             if (!err) {
-                dfr.resolve(files.map(function (filename) {
-                    return {
-                        name: filename
-                    };
-                }));
+                dfr.resolve({
+                    files: files.map(function (filename) {
+                        return {
+                            name: filename
+                        };
+                    }),
+                    folderPath: folderPath
+                });
             } else {
                 dfr.reject(err);
             }
