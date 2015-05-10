@@ -5,7 +5,7 @@
 + body-parser
 + jQuery(?)
 + jquery-deferred
-+ zip-archiver
++ node-archiver (https://github.com/archiverjs/node-archiver)
 
 ### javascript
 + bootstrap-3.3.4

@@ -7,9 +7,10 @@ module.exports = (function () {
         when = require('jquery-deferred').when,
         path = require('path'),
         fs = require('fs'),
-        Zip = require('zip-archiver').Zip,
+        archiver = require('archiver'),
         jpgFiles = require('./jpgFiles'),
 
+        zipArchiver,
         booksFolderPath;
 
     function init(booksFolderPath0) {
@@ -83,16 +84,35 @@ module.exports = (function () {
             };
         });
     }
+    zipArchiver = (function () {
+        function append(self, filelname, filePath) {
+            self.archive.append(fs.createReadStream(filePath), {
+                name: filelname
+            });
+        }
+        function finalize(self, handler) {
+            self.archive.finalize();
+            handler();
+        }
+        return function (zipFilePath) {
+            var self = {};
+            self.stream = fs.createWriteStream(zipFilePath);
+            self.archive = archiver('zip');
+            self.archive.pipe(self.stream);
+
+            return {
+                append: append.bind(null, self),
+                finalize: finalize.bind(null, self)
+            };
+        };
+    }());
     function makeZipFile(folderName, files) {
         var dfr = deferred();
         when(
             checkZipFile(folderName),
             checkFiles(folderName, files)
         ).done(function (zipFileStatus, filesStatus) {
-            var zipFile,
-                zipFilePath,
-                fullpathList,
-                addFileDfrList = [];
+            var zipArchive;
             if (zipFileStatus.exists !== 'no') {
                 dfr.resolve({
                     makeZipFileStatus: 'ng',
@@ -104,29 +124,14 @@ module.exports = (function () {
                     reason: 'zip file already exists.'
                 });
             } else {
-                zipFilePath = zipFileStatus.zipFilePath;
-                fullpathList = filesStatus.fullpathList;
                 //console.log(zipFilePath);
                 //console.log(zipFolderPath);
-                zipFile = new Zip({
-                    root: '/',
-                    file: zipFilePath
+                zipArchive = zipArchiver(zipFileStatus.zipFilePath);
+                filesStatus.fullpathList.forEach(function (filepath, idx) {
+                    zipArchive.append(files[idx], filepath);
                 });
-                fullpathList.forEach(function (filepath) {
-                    var addDfr = deferred();
-                    addFileDfrList.push(addDfr);
-                    console.log(filepath);
-                    zipFile.add(
-                        filepath,
-                        function () {
-                            addDfr.resolve();
-                        },
-                        ''
-                    );
-                });
-                when.apply(null, addFileDfrList).done(function () {
-                    zipFile.done();
-                    console.log('gen ' + zipFilePath);
+                zipArchive.finalize(function () {
+                    console.log('gen ' + zipFileStatus.zipFilePath);
                     dfr.resolve({
                         makeZipFileStatus: 'ok'
                     });
