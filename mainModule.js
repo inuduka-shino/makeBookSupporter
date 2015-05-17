@@ -13,10 +13,11 @@ module.exports = (function () {
         }),
         ajaxDriverAsync = require('./ajaxDriver').driverAsync;
 
-    router.use(/\//, function (req, res) {
+    router.use(/^\//, function (req, res) {
         unuseVars(req);
         //console.log('makeBookSupporter web server top page.');
-        res.sendFile(__dirname + '/contents/top.html');
+        //res.sendFile(__dirname + '/contents/view.html');
+        res.redirect('/mbs/view.html');
     });
 
     router.use('/api/:ajaxtype(*)', function (req, res) {
@@ -26,7 +27,7 @@ module.exports = (function () {
         try {
             ajaxDriverAsync(req.params.ajaxtype, req.body)
                 .done(function (response) {
-                    console.log('async done!');
+                    // console.log('async done!');
                     res.json(response);
                 })
                 .fail(function (error) {
@@ -44,10 +45,14 @@ module.exports = (function () {
         }
     });
 
+    router.use(':htmlfile(*.html)', function (req, res) {
+        res.sendFile(__dirname + '/contents' + req.params.htmlfile);
+    });
     router.use(':jsfile(*.js)', function (req, res) {
-        //console.log('js loaded.');
-        //console.log(req.params.jsfile);
         res.sendFile(__dirname + '/contents' + req.params.jsfile);
+    });
+    router.use(':cssfile(*.css)', function (req, res) {
+        res.sendFile(__dirname + '/contents' + req.params.cssfile);
     });
 
 

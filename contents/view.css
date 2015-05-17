@@ -1,0 +1,29 @@
+div.mbs-folder-list-ctrl div.list-group a.list-group-item > span.folderName {
+    margin-left:    5px;
+}
+div.mbs-folder-list-ctrl div.list-group a.list-group-item > span.glyphicon.golden {
+    color: Goldenrod
+}
+div.mbs-file-list-ctrl div.panel-heading > span.glyphicon.golden {
+    color: Goldenrod
+}
+div.mbs-file-list-ctrl div.panel-heading > span.folderName {
+    margin-left:    5px;
+}
+div.mbs-file-list-ctrl div.mbs-button-list > button {
+    padding: 2px;
+    margin-top: -5px;
+    margin-bottom: 10px;
+}
+div.mbs-file-list-ctrl div.mbs-button-list > button > span.glyphicon {
+    padding-right: 5px;
+}
+div.mbs-file-list-ctrl div.mbs-button-list > button.disabled {
+    background-color: gray;
+}
+
+div.mbs-file-list-ctrl div.mbs-scrollbox {
+    max-height: 300px;
+    overflow-y: auto;
+}
+
