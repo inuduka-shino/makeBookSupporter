@@ -14,7 +14,7 @@ md(function (modules) {
         viewFilePanel = modules.viewFilePanel,
         viewFileList = modules.viewFileList,
         viewCategoryList = modules.viewCategoryList,
-        viewZipButton = modules.viewZipButton,
+        viewFileListButton = modules.viewFileListButton,
 
         genCategoryManager = modules.categoryManager.genCategoryManager,
         categoryDict = modules.categoryManager.categoryDict,
@@ -65,14 +65,15 @@ md(function (modules) {
         // query zipFile status
         checkZipFile(foldername).done(function (zipFileMakable) {
             if (zipFileMakable) {
-                viewZipButton.enable();
+                viewFileListButton.zipBtnCtrl.enable();
+            } else {
+                viewFileListButton.zipBtnCtrl.disable();
             }
         });
 
         // fileList panel 初期化
         // TODO loading... message
         viewFilePanel.setTitle(fileInfo);
-        viewZipButton.reset();
         viewFileList.clearFiles();
         viewContainer.change('fileList');
     }
@@ -104,20 +105,20 @@ md(function (modules) {
     }());
 
     // ファイルリスト　戻るボタン
-    viewFileList.clickBack(function () {
+    viewFileListButton.backBtnCtrl.click(function () {
         currentSelectedFileInfo = undefined;
         redrawFolderView();
         viewContainer.change('folderList');
     });
     // ファイルリスト　zipボタン
-    viewZipButton.click(function () {
+    viewFileListButton.zipBtnCtrl.click(function () {
         var dfr = $.Deferred(),
             name = currentSelectedFileInfo.name,
             files = currentSelectedFileInfo.files;
         requestMakeZipFile(name, files).done(function (makeZipFileResult) {
             dfr.resolve();
             if (makeZipFileResult === 'ok') {
-                viewZipButton.disable();
+                viewFileListButton.zipBtnCtrl.disable();
             }
         });
         return dfr.promise();

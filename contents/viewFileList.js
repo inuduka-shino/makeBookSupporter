@@ -3,7 +3,6 @@
 md('viewFileList', function () {
     'use strict';
     var $panel = $('div.panel.mbs-file-list-ctrl'),
-        $backBtn = $('button.mbs-back-btn', $panel),
         $fileList = $('#fileListItemTemplate', $panel),
         $template = $($fileList.html()),
         $listBox = $fileList.parent();
@@ -37,12 +36,10 @@ md('viewFileList', function () {
         $listBox.empty();
         addFile({
             type: 'no select'
-        });    }
+        });
+    }
 
     return {
-        clickBack: function (handler) {
-            $backBtn.on('click', handler);
-        },
         clearFiles: clearFiles,
         setFiles: setFiles
     };
