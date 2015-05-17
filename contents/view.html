@@ -88,12 +88,17 @@
                 <span class="folderName">folder name</span>
             </div>
             <div class="panel-body">
-                <button class="btn btn-info mbs-back-btn">
-                    <span class="glyphicon glyphicon-eject" aria-hidden="false"></span>戻る
-                </button>
-                <button class="btn btn-info mbs-zip-btn">
-                    <span class="glyphicon glyphicon-compressed" aria-hidden="false"></span>zip
-                </button>
+                <div class="mbs-button-list">
+                    <button class="btn btn-info mbs-back-btn">
+                        <span class="glyphicon glyphicon-eject" aria-hidden="false"></span>戻る
+                    </button>
+                    <button class="btn btn-info mbs-zip-btn">
+                        <span class="glyphicon glyphicon-compressed" aria-hidden="false"></span>zip
+                    </button>
+                    <button class="btn btn-info mbs-renumber-btn">
+                        <span class="glyphicon glyphicon-sort-by-order" aria-hidden="false"></span>renum
+                    </button>
+                </div>
                 <div class="list-group">
                     <template id="categoryItemTemplate">
                       <a href="#" class="list-group-item">
@@ -130,7 +135,7 @@
     <script src="/mbs/viewBKLog.js"></script>
     <script src="/mbs/viewBookFolder.js"></script>
     <script src="/mbs/viewFilePanel.js"></script>
-    <script src="/mbs/viewZipButton.js"></script>
+    <script src="/mbs/viewFileListButton.js"></script>
     <script src="/mbs/viewCategoryList.js"></script>
     <script src="/mbs/viewFileList.js"></script>
 
