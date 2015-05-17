@@ -48,7 +48,8 @@ md('viewBKLog', function (modules) {
             });
             return dfr.promise();
         }()),
-        dfrBtn = $.Deferred();
+        dfrBtn = $.Deferred(),
+        redrawCtrl;
 
     (function () {
         var $bklogLink = $('a.mbs-bklog-link', $panel);
@@ -88,8 +89,21 @@ md('viewBKLog', function (modules) {
         $panel.hide();
     }
 
+
+    redrawCtrl = (function () {
+        var $redraw = $('button.mbs-redraw', $panel),
+            clickNotify = $.Deferred();
+        $redraw.on('click', function () {
+            clickNotify.notify();
+        });
+        return {
+            click: clickNotify.promise()
+        };
+
+    }());
     return dfrBtn.promise({
         show: show,
-        hide: hide
+        hide: hide,
+        redrawCtrl: redrawCtrl
     });
 });

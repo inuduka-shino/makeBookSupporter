@@ -22,7 +22,6 @@ md(function (modules) {
         currentSelectedFileInfo;
 
 
-
     // category情報
     function makeCategorysInfo(categorySet) {
         var codeList = categorySet.getCategoryCodeList();
@@ -122,6 +121,11 @@ md(function (modules) {
             }
         });
         return dfr.promise();
+    });
+
+    // 再描画ボタンクリック
+    viewBKLog.redrawCtrl.click.progress(function () {
+        redrawFolderView();
     });
 
     // 生成ボタンクリック
