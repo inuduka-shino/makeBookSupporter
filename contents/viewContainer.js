@@ -24,10 +24,6 @@ md('viewContainer', function () {
             };
         }());
 
-    $(function () {
-        containers.add('folderList', $('div#mbs-container-folderList'));
-        containers.add('fileList', $('div#mbs-container-fileList'));
-    });
 
     function change(containerName) {
         containers.forEach(function (codeName, $cntnr) {
@@ -38,6 +34,11 @@ md('viewContainer', function () {
             }
         });
     }
+
+    (function () {
+        containers.add('folderList', $('div#mbs-container-folderList'));
+        containers.add('fileList', $('div#mbs-container-fileList'));
+    }());
 
     return {
         change: change

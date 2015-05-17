@@ -98,6 +98,11 @@ md(function (modules) {
         });
     }
 
+    // 初期表示
+    (function () {
+        viewContainer.change('folderList');
+        redrawFolderView();
+    }());
 
     // ファイルリスト　戻るボタン
     viewFileList.clickBack(function () {
@@ -129,10 +134,5 @@ md(function (modules) {
         });
     });
 
-    // 初期表示
-    $(function () {
-        viewContainer.change('folderList');
-        redrawFolderView();
-    });
 });
 
