@@ -102,6 +102,7 @@ md(function (modules) {
     // ファイルリスト　戻るボタン
     viewFileList.clickBack(function () {
         currentSelectedFileInfo = undefined;
+        redrawFolderView();
         viewContainer.change('folderList');
     });
     // ファイルリスト　zipボタン
