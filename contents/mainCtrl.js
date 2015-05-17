@@ -115,9 +115,9 @@ md(function (modules) {
         var dfr = $.Deferred(),
             name = currentSelectedFileInfo.name,
             files = currentSelectedFileInfo.files;
-        requestMakeZipFile(name, files).done(function (makeZipFileResult) {
+        requestMakeZipFile(name, files).done(function (response) {
             dfr.resolve();
-            if (makeZipFileResult === 'ok') {
+            if (response.result.makeZipFileStatus === 'ok') {
                 viewFileListButton.zipBtnCtrl.disable();
             }
         });
