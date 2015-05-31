@@ -4,6 +4,16 @@ div.mbs-folder-list-ctrl div.list-group a.list-group-item  span.folderName {
 div.mbs-folder-list-ctrl div.list-group a.list-group-item  span.glyphicon.golden {
     color: Goldenrod
 }
+div.mbs-folder-list-ctrl div.list-group a.list-group-item  div.mbs-folderlist-icons {
+    padding-left: 8px;
+}
+
+div.mbs-folder-list-ctrl div.list-group a.list-group-item  div.mbs-folderlist-icons button {
+    padding: 2px;
+    margin-top: -5px;
+    margin-bottom: 10px;
+}
+
 div.mbs-file-list-ctrl div.panel-heading > span.glyphicon.golden {
     color: Goldenrod
 }

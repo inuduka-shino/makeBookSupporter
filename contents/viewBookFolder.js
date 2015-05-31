@@ -23,7 +23,8 @@ md('viewBookFolder', function () {
 
     function add(info, handler) {
         var $item = $template.clone(),
-            $icon =  $item.find('span.glyphicon'),
+            $icon =  $item.find('span.mbs-folder-icon'),
+            $zipicon =  $item.find('span.mbs-zip-btn').hide(),
             $folderName = $item.find('span.folderName'),
 
             clickHandler = genClickHandler(handler),
@@ -45,6 +46,15 @@ md('viewBookFolder', function () {
         }
 
         $listbox.append($item);
+
+        function existZip() {
+            $zipicon.show();
+            $zipicon.addClass('golden');
+        }
+
+        return {
+            existZip: existZip
+        };
     }
     $(function () {
         clear();

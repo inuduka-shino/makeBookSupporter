@@ -1,4 +1,4 @@
-/*jslint indent: 4 */
+/*jslint indent: 4, regexp: true */
 /*global md, $ */
 md(function (modules) {
     'use strict';
@@ -78,22 +78,43 @@ md(function (modules) {
         viewContainer.change('fileList');
     }
 
+    function zipFileBasename(filename) {
+        if (/(.*)\.zip$/.test(filename)) {
+            return RegExp.$1;
+        }
+        return undefined;
+    }
+
     // BookFolder情報取得＆描画
     function redrawFolderView() {
         queryBookFolders().done(function (response) {
+            var folderItems = {};
             viewBookFolder.clear();
             response.folders.forEach(function (folder) {
-                var fileInfo = {
-                        name: folder.name
-                    };
+                var foldername = folder.name,
+                    fileInfo = {
+                        name: foldername
+                    },
+                    zfBasename;
                 if (folder.isXinfo) {
                     fileInfo.type = "bookFolder";
                 } else if (folder.isFolder) {
                     fileInfo.type = "folder";
                 } else {
                     fileInfo.type = "file";
+                    zfBasename = zipFileBasename(foldername);
                 }
-                viewBookFolder.add(fileInfo, clickFolderHandler.bind(null, fileInfo));
+
+                if ((zfBasename !== undefined) &&
+                        (folderItems[zfBasename] !== undefined)) {
+                    folderItems[zfBasename].existZip();
+                } else {
+                    folderItems[foldername] = viewBookFolder.add(
+                        fileInfo,
+                        clickFolderHandler.bind(null, fileInfo)
+                    );
+                }
+
             });
         });
     }
