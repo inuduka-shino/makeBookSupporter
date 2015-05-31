@@ -23,8 +23,8 @@ md('viewBookFolder', function () {
 
     function add(info, handler) {
         var $item = $template.clone(),
-            $icon =  $item.children('span.glyphicon'),
-            $folderName = $item.children('span.folderName'),
+            $icon =  $item.find('span.glyphicon'),
+            $folderName = $item.find('span.folderName'),
 
             clickHandler = genClickHandler(handler),
             name = info.name,
