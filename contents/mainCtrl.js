@@ -78,6 +78,10 @@ md(function (modules) {
         viewContainer.change('fileList');
     }
 
+    function clickZipBtnHandler(fileInfo) {
+        console.log('clickZipBtnHandler');
+    }
+
     function zipFileBasename(filename) {
         if (/(.*)\.zip$/.test(filename)) {
             return RegExp.$1;
@@ -107,11 +111,12 @@ md(function (modules) {
 
                 if ((zfBasename !== undefined) &&
                         (folderItems[zfBasename] !== undefined)) {
-                    folderItems[zfBasename].existZip();
+                    folderItems[zfBasename].disable();
                 } else {
                     folderItems[foldername] = viewBookFolder.add(
                         fileInfo,
-                        clickFolderHandler.bind(null, fileInfo)
+                        clickFolderHandler.bind(null, fileInfo),
+                        clickZipBtnHandler.bind(null, fileInfo)
                     );
                 }
 

@@ -9,9 +9,11 @@ div.mbs-folder-list-ctrl div.list-group a.list-group-item  div.mbs-folderlist-ic
 }
 
 div.mbs-folder-list-ctrl div.list-group a.list-group-item  div.mbs-folderlist-icons button {
+    margin-left: 7px;
     padding: 2px;
-    margin-top: -5px;
-    margin-bottom: 10px;
+}
+div.mbs-folder-list-ctrl div.list-group a.list-group-item  div.mbs-folderlist-icons button.mbs-disabled {
+    background-color: gray;
 }
 
 div.mbs-file-list-ctrl div.panel-heading > span.glyphicon.golden {

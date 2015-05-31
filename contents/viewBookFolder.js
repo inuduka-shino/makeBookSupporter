@@ -21,10 +21,10 @@ md('viewBookFolder', function () {
         };
     }
 
-    function add(info, handler) {
+    function add(info, handler, zipBtnHandler) {
         var $item = $template.clone(),
             $icon =  $item.find('span.mbs-folder-icon'),
-            $zipicon =  $item.find('span.mbs-zip-btn').hide(),
+            $zipBtn =  $item.find('button.mbs-zip-btn'),
             $folderName = $item.find('span.folderName'),
 
             clickHandler = genClickHandler(handler),
@@ -34,26 +34,31 @@ md('viewBookFolder', function () {
         $folderName.text(name);
         if (type === 'folder' || type === 'file') {
             $icon.removeClass('golden');
+            $zipBtn.hide();
         }
         if (type === 'file') {
             $icon
                 .removeClass('glyphicon-folder-open')
                 .addClass('glyphicon-file');
             $item.addClass('disabled');
+            $zipBtn.hide();
         }
         if (clickHandler !== undefined && type !== 'file') {
             $item.on('click', clickHandler.bind(null, info));
         }
 
+        $zipBtn.on('click', genClickHandler(zipBtnHandler));
         $listbox.append($item);
 
-        function existZip() {
-            $zipicon.show();
-            $zipicon.addClass('golden');
+        function disable() {
+            $zipBtn.css('cursor', 'not-allowed');
+            $zipBtn.addClass('mbs-disabled');
+            $zipBtn.removeClass('btn-info');
+            $zipBtn.addClass('btn-default');
         }
 
         return {
-            existZip: existZip
+            disable: disable
         };
     }
     $(function () {
