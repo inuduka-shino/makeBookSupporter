@@ -1,6 +1,6 @@
 /*jslint indent: 4 */
-/*global md, $ */
-md('jsonCall', function () {
+/*global define */
+define(['jquery'], function ($) {
     'use strict';
     function jsonCall(url, param) {
         var jqXHR;

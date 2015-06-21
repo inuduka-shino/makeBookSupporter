@@ -1,6 +1,6 @@
 /*jslint indent: 4 */
-/*global $, md */
-md('viewBKLog', function (modules) {
+/*global define */
+define(['jquery', 'setting'], function ($, setting) {
     'use strict';
     var $panel = $('div.mbs-gbl-ctrl'),
         ctrlPlusMinus = (function () {
@@ -53,7 +53,7 @@ md('viewBKLog', function (modules) {
 
     (function () {
         var $bklogLink = $('a.mbs-bklog-link', $panel);
-        modules.setting.done(function (setting) {
+        setting.done(function (setting) {
             $bklogLink.attr('href', setting.bklogUrl);
         });
     }());
