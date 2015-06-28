@@ -1,10 +1,10 @@
 /*jslint indent: 4 */
-/*global $, md */
-md('setting', function (modules) {
+/*global define */
+define(['jquery', 'jsonCall'], function ($, jsonCall) {
     'use strict';
     var dfr = $.Deferred();
 
-    modules.jsonCall.loadSetting().done(function (response) {
+    jsonCall.loadSetting().done(function (response) {
         dfr.resolve(response);
     });
 

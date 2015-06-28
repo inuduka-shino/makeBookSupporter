@@ -1,13 +1,13 @@
 /*jslint indent: 4 */
-/*global $, md */
-md('viewFileList', function () {
+/*global define */
+define(['jquery'], function ($) {
     'use strict';
     var $panel = $('div.panel.mbs-file-list-ctrl'),
         $fileList = $('#fileListItemTemplate', $panel),
         $template = $($fileList.html()),
         $listBox = $fileList.parent();
 
-  　 function addFile(fileInfo) {
+    function addFile(fileInfo) {
         var $item = $template.clone(),
             $filename = $('span.fileName', $item);
         if (fileInfo.type === 'no data') {

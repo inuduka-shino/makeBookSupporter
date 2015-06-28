@@ -1,6 +1,6 @@
 /*jslint indent: 4 */
-/*global $, md */
-md('viewBookFolder', function () {
+/*global define */
+define(['jquery'], function ($) {
     'use strict';
     var $panel = $('div.panel.mbs-folder-list-ctrl'),
         $folderList = $('template#folderListItemTemplate', $panel),

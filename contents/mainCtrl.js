@@ -1,28 +1,39 @@
-/*jslint indent: 4, regexp: true */
-/*global md, $ */
-md(function (modules) {
+/*jslint indent: 4 */
+/*global require, console */
+require([
+    'jquery',
+    'jsonCall',
+    'categoryManager',
+    'viewCtrl',
+    'bootstrap'
+], function (
+    $,
+    jsonCall,
+    categoryManager,
+    viewCtrl
+) {
     'use strict';
-    var queryBookFolders = modules.jsonCall.queryBookFolders,
-        requestGenBKL = modules.jsonCall.requestGenBKL,
-        queryJpgFiles = modules.jsonCall.queryJpgFiles,
-        checkZipFile = modules.jsonCall.checkZipFile,
-        requestMakeZipFile = modules.jsonCall.makeZipFile,
+    var queryBookFolders = jsonCall.queryBookFolders,
+        requestGenBKL = jsonCall.requestGenBKL,
+        queryJpgFiles = jsonCall.queryJpgFiles,
+        checkZipFile = jsonCall.checkZipFile,
+        requestMakeZipFile = jsonCall.makeZipFile,
 
-        viewContainer = modules.viewContainer,
-        viewBKLog = modules.viewBKLog,
-        viewBookFolder = modules.viewBookFolder,
-        viewFilePanel = modules.viewFilePanel,
-        viewFileList = modules.viewFileList,
-        viewCategoryList = modules.viewCategoryList,
-        viewFileListButton = modules.viewFileListButton,
+        viewContainer = viewCtrl.viewContainer,
+        viewBKLog = viewCtrl.viewBKLog,
+        viewBookFolder = viewCtrl.viewBookFolder,
+        viewFilePanel = viewCtrl.viewFilePanel,
+        viewFileList = viewCtrl.viewFileList,
+        viewCategoryList = viewCtrl.viewCategoryList,
+        viewFileListButton = viewCtrl.viewFileListButton,
 
-        genCategoryManager = modules.categoryManager.genCategoryManager,
-        categoryDict = modules.categoryManager.categoryDict,
+        genCategoryManager = categoryManager.genCategoryManager,
+        categoryDict = categoryManager.categoryDict,
 
         currentSelectedFileInfo;
 
 
-    // category情報
+    // category
     function makeCategorysInfo(categorySet) {
         var codeList = categorySet.getCategoryCodeList();
 
@@ -33,7 +44,7 @@ md(function (modules) {
                 count: ctg.count(),
                 files: ctg.files(),
                 name: ctgInfo.name,
-                extClass: ctgInfo.extClass,
+                extClass: ctgInfo.extClass
             };
         });
 
@@ -77,18 +88,6 @@ md(function (modules) {
         viewFileList.clearFiles();
         viewContainer.change('fileList');
     }
-
-    function clickZipBtnHandler(fileInfo) {
-        console.log('clickZipBtnHandler');
-    }
-
-    function zipFileBasename(filename) {
-        if (/(.*)\.zip$/.test(filename)) {
-            return RegExp.$1;
-        }
-        return undefined;
-    }
-
     // BookFolder情報取得＆描画
     function redrawFolderView() {
         queryBookFolders().done(function (response) {
@@ -166,4 +165,3 @@ md(function (modules) {
     });
 
 });
-

@@ -1,6 +1,6 @@
 /*jslint indent: 4 */
-/*global $, md */
-md('viewContainer', function () {
+/*global define */
+define(['jquery'], function ($) {
     'use strict';
     var containers = (function () {
             var $containers = {};

@@ -1,6 +1,6 @@
 /*jslint indent: 4 */
-/*global $, md */
-md('categoryManager', function () {
+/*global define */
+define(['jquery'], function () {
     'use strict';
     var categoryDict,
         jpgFilePattern,
