@@ -13,6 +13,7 @@ require([
     viewCtrl
 ) {
     'use strict';
+    // TODO view をグループで分割
     var queryBookFolders = jsonCall.queryBookFolders,
         requestGenBKL = jsonCall.requestGenBKL,
         queryJpgFiles = jsonCall.queryJpgFiles,
@@ -88,6 +89,34 @@ require([
         viewFileList.clearFiles();
         viewContainer.change('fileList');
     }
+
+    function clickZipBtnHandler(fileInfo) {
+        console.log('clickZipBtnHandler');
+        console.log(fileinfo);
+        /*
+        requestMakeZipFile(name, files).done(function (response) {
+            if (response.result.makeZipFileStatus === 'ok') {
+                viewFileListButton.zipBtnCtrl.disable();
+                // zip後のbehavior
+                // zipbutton disable
+                console.log('ziped.');
+            }
+        });
+        */
+
+    }
+
+    function zipFileBasename(filename) {
+        /*jslint regexp: true */
+        var zipFilePattern = /(.*)\.zip$/;
+        /*jslint regexp: true*/
+
+        if (zipFilePattern.test(filename)) {
+            return RegExp.$1;
+        }
+        return undefined;
+    }
+
     // BookFolder情報取得＆描画
     function redrawFolderView() {
         queryBookFolders().done(function (response) {

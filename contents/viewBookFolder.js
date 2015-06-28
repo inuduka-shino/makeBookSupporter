@@ -32,6 +32,7 @@ define(['jquery'], function ($) {
             type = info.type;
 
         $folderName.text(name);
+        // TODO 表示判定をmainで
         if (type === 'folder' || type === 'file') {
             $icon.removeClass('golden');
             $zipBtn.hide();
