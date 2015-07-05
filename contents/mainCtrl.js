@@ -1,5 +1,5 @@
 /*jslint indent: 4 */
-/*global require, console */
+/*global require, console, Promise */
 require([
     'jquery',
     'jsonCall',
@@ -117,8 +117,8 @@ require([
     }
 
     // BookFolder情報取得＆描画
-    function redrawFolderView(cb) {
-        queryBookFolders().done(function (response) {
+    function redrawFolderView() {
+        return Promise.resolve(queryBookFolders()).then(function (response) {
             var folderItems = {};
             viewBookFolder.clear();
             response.folders.forEach(function (folder) {
@@ -146,17 +146,13 @@ require([
                         clickZipBtnHandler.bind(null, fileInfo)
                     );
                 }
-
             });
-            if (cb !== undefined) {
-                cb();
-            }
         });
     }
 
     // 初期表示
     (function () {
-        redrawFolderView(function () {
+        redrawFolderView().then(function () {
             viewContainer.change('folderList');
             viewLoading.hide();
         });
