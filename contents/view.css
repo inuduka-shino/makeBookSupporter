@@ -1,3 +1,10 @@
+div.container-fluid {
+    display: none;
+}
+div.container-fluid#mbs-container-loading {
+    display: block;
+}
+
 div.mbs-folder-list-ctrl div.list-group a.list-group-item  span.folderName {
     margin-left:    5px;
 }
@@ -38,4 +45,3 @@ div.mbs-file-list-ctrl div.mbs-scrollbox {
     max-height: 300px;
     overflow-y: auto;
 }
-

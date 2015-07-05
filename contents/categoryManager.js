@@ -1,4 +1,4 @@
-/*jslint indent: 4 */
+/*jslint indent: 4, es5: true */
 /*global define */
 define(['jquery'], function () {
     'use strict';
@@ -78,7 +78,6 @@ define(['jquery'], function () {
                 return 'supplement';
             }
         }
-
 
         return 'unknown';
     }

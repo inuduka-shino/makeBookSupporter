@@ -13,7 +13,6 @@ require([
     viewCtrl
 ) {
     'use strict';
-    // TODO view をグループで分割
     var queryBookFolders = jsonCall.queryBookFolders,
         requestGenBKL = jsonCall.requestGenBKL,
         queryJpgFiles = jsonCall.queryJpgFiles,
@@ -27,6 +26,7 @@ require([
         viewFileList = viewCtrl.viewFileList,
         viewCategoryList = viewCtrl.viewCategoryList,
         viewFileListButton = viewCtrl.viewFileListButton,
+        viewLoading = viewCtrl.viewLoading,
 
         genCategoryManager = categoryManager.genCategoryManager,
         categoryDict = categoryManager.categoryDict,
@@ -84,7 +84,6 @@ require([
         });
 
         // fileList panel 初期化
-        // TODO loading... message
         viewFilePanel.setTitle(fileInfo);
         viewFileList.clearFiles();
         viewContainer.change('fileList');
@@ -92,7 +91,7 @@ require([
 
     function clickZipBtnHandler(fileInfo) {
         console.log('clickZipBtnHandler');
-        console.log(fileinfo);
+        console.log(fileInfo);
         /*
         requestMakeZipFile(name, files).done(function (response) {
             if (response.result.makeZipFileStatus === 'ok') {
@@ -118,7 +117,7 @@ require([
     }
 
     // BookFolder情報取得＆描画
-    function redrawFolderView() {
+    function redrawFolderView(cb) {
         queryBookFolders().done(function (response) {
             var folderItems = {};
             viewBookFolder.clear();
@@ -149,13 +148,18 @@ require([
                 }
 
             });
+            if (cb !== undefined) {
+                cb();
+            }
         });
     }
 
     // 初期表示
     (function () {
-        viewContainer.change('folderList');
-        redrawFolderView();
+        redrawFolderView(function () {
+            viewContainer.change('folderList');
+            viewLoading.hide();
+        });
     }());
 
     // ファイルリスト　戻るボタン
