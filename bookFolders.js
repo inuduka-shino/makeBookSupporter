@@ -1,5 +1,5 @@
 /*jslint node: true, indent: 4 , nomen:true */
-/*global jQuery */
+/*global jQuery, Promise */
 
 module.exports = (function () {
     'use strict';
@@ -15,58 +15,63 @@ module.exports = (function () {
     }
 
     function getBookFolderInfo(filename) {
-        var statdfr = deferred(),
-            xinfodfr = deferred(),
-
+        var //statdfr = deferred(),
             fullpath = path.join(booksFolderPath, filename),
             xinfopath = path.join(fullpath, 'xinfo.txt');
 
         //console.log(filename);
-        fs.stat(fullpath, function (err, stats) {
-            var isFolder;
-            if (!err) {
-                isFolder = stats.isDirectory();
-                statdfr.resolve({
-                    isFolder: isFolder
-                });
-                if (isFolder) {
-                    //fs.stat(xinfopath, function (errXinfo, statsXinfo) {
-                    fs.stat(xinfopath, function (errXinfo) {
-                        if (!errXinfo) {
-                            xinfodfr.resolve(true);
-                        } else {
-                            //console.log(errXinfo);
-                            if (errXinfo.code === 'ENOENT') {
-                                xinfodfr.resolve(false);
-                            } else {
-                                xinfodfr.reject(errXinfo);
-                            }
-                        }
-                    });
+        return new Promise(function (resolve, reject) {
+            fs.stat(fullpath, function (err, stats) {
+                if (!err) {
+                    resolve(stats);
                 } else {
-                    xinfodfr.resolve();
+                    reject({statErr: err});
                 }
-            } else {
-                statdfr.reject(err);
-                xinfodfr.reject();
+            });
+        }).then(function (stats) {
+            if (stats.isDirectory() === false) {
+                return Promise.resolve({
+                    isFolder: false,
+                    isXinfo: undefined
+                });
             }
-        });
-
-        return when(statdfr, xinfodfr).then(function (stat, xinfo) {
+            return new Promise(function (resolve, reject) {
+                fs.stat(xinfopath, function (errXinfo, statsXinfo) {
+                    if (!errXinfo) {
+                        resolve({
+                            isFolder: true,
+                            isXinfo: true,
+                            statsXinfo: statsXinfo
+                        });
+                    } else {
+                        //console.log(errXinfo);
+                        if (errXinfo.code === 'ENOENT') {
+                            resolve({
+                                isFolder: true,
+                                isXinfo: false
+                            });
+                        } else {
+                            reject({errXinfo: errXinfo});
+                        }
+                    }
+                });
+            });
+        }).then(function (stats) {
             return {
                 name: filename,
-                isFolder: stat.isFolder,
-                isXinfo: xinfo
+                isFolder: stats.isFolder,
+                isXinfo: stats.isXinfo
             };
-        }, function (statErr, xinfoErr) {
+        }).catch(function (err) {
             return {
                 name: filename,
                 error: 'error',
-                statErr: statErr,
-                xinfoErr: xinfoErr
+                statErr: err.statErr,
+                xinfoErr: err.xinfoErr
             };
         });
     }
+
     function query() {
         var dfr = deferred();
         fs.readdir(booksFolderPath, function (err, files) {
@@ -97,4 +102,3 @@ module.exports = (function () {
         query: query
     };
 }());
-
