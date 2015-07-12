@@ -1,9 +1,8 @@
 /*jslint node: true, indent: 4 , nomen:true */
-/*global jQuery */
+/*global jQuery, Promise */
 module.exports = (function () {
     'use strict';
     var
-        deferred = require('jquery-deferred').Deferred,
         genBooklogFolderCtrl = require('../booklog/apiInterface'),
         genBooklogFolder = genBooklogFolderCtrl(),
         bookFoldersCntrl = require('./bookFolders'),
@@ -18,80 +17,70 @@ module.exports = (function () {
     jpgFilesCntrl.init(bookFolderBasePath);
     zipBookFolder.init(bookFolderBasePath);
 
-    function driverAsync(reqType, param) {
-        var ret;
+    function driverPromise(reqType, param) {
         /*
         console.log('ajax driver');
         console.log(reqType);
         console.log(param);
         */
         if (reqType === 'setting') {
-            return deferred().resolve(localSetting);
+            return Promise.resolve(localSetting);
         }
         if (reqType === 'genBKL') {
-            ret = genBooklogFolder.genFolderAsync(param.count)
-                .then(function () {
-                    return {
-                        status: 'OK'
-                    };
-                }, function (error) {
-                    console.log(error);
-                    return {
-                        status: 'ERROR'
-                    };
-                })
-                .promise();
-            return ret;
+            return new Promise(function (resolve) {
+                genBooklogFolder.genFolderAsync(param.count)
+                    .then(function () {
+                        resolve({
+                            status: 'OK'
+                        });
+                    });
+            });
         }
         if (reqType === 'queryBookFolders') {
-            return queryBookFolders()
-                .then(function (folders) {
-
-                    return {
+            return new Promise(function (resolve) {
+                queryBookFolders().then(function (folders) {
+                    resolve({
                         status: 'OK',
                         folders: folders
-                    };
-
+                    });
                 });
+            });
         }
         if (reqType === 'queryJpgFiles') {
-            return queryJpgFiles(param.name)
-                .then(function (result) {
-                    return {
+            return new Promise(function (resolve) {
+                queryJpgFiles(param.name).then(function (result) {
+                    resolve({
                         status: 'OK',
                         files: result.files
-                    };
-
+                    });
                 });
+            });
         }
         if (reqType === 'makeZipFile') {
-            return zipBookFolder.makeZipFile(param.foldername, param.files)
-                .then(function (result) {
-                    return {
-                        status: 'OK',
-                        result: result
-                    };
-
-                });
+            return new Promise(function (resolve) {
+                zipBookFolder.makeZipFile(param.foldername, param.files)
+                    .then(function (result) {
+                        resolve({
+                            status: 'OK',
+                            result: result
+                        });
+                    });
+            });
         }
         if (reqType === 'checkZipFile') {
-            ret = zipBookFolder.checkZipFile(param.foldername)
-                .then(function (zipCheck) {
-                    return {
-                        status: 'OK',
-                        zipCheck: zipCheck
-                    };
-                }, function (error) {
-                    console.log(error);
-                    return {
-                        status: 'ERROR'
-                    };
-                })
-                .promise();
-            return ret;
+            return new Promise(function (resolve) {
+                zipBookFolder.checkZipFile(param.foldername)
+                    .then(function (zipCheck) {
+                        resolve({
+                            status: 'OK',
+                            zipCheck: zipCheck
+                        });
+                    });
+            });
         }
+        /*
         if (reqType === 'sample') {
-            return deferred().resolve({
+            return Promise.resolve({
                 status: 'OK',
                 data: [
                     {name: 'a-1'},
@@ -100,7 +89,8 @@ module.exports = (function () {
                 ]
             });
         }
-        throw new Error('unkown reqType:' + reqType);
+        */
+        return Promise.reject(new Error('unkown reqType:' + reqType));
     }
     function driver(reqType, param) {
         if (reqType === 'genBKL') {
@@ -111,9 +101,9 @@ module.exports = (function () {
         }
         throw new Error('unkown reqType:' + reqType);
     }
+
     return {
         driver: driver,
-        driverAsync: driverAsync,
+        driverPromise: driverPromise
     };
 }());
-
