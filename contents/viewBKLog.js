@@ -3,62 +3,15 @@
 define(['jquery', 'setting'], function ($, setting) {
     'use strict';
     var $panel = $('div.mbs-gbl-ctrl'),
-        ctrlPlusMinus = (function () {
-            var
-                $pmBlock = $('span.mbs-plus-minus', $panel),
-                $buttons = $('button', $pmBlock),
-                $btnPlus = $buttons.eq(0),
-                $btnMinus = $buttons.eq(1),
-                dfr = $.Deferred();
+        ctrlPlusMinus,
+        ctrlCountInput,
+        ctrlGenBKLBtn,
+        ctrlRedrawBtn,
+        noop = function () {
+            return undefined;
+        };
 
-            $btnPlus.on('click', function () {
-                dfr.notify('plus');
-            });
-            $btnMinus.on('click', function () {
-                dfr.notify('minus');
-            });
-
-            return dfr.promise();
-        }()),
-        ctrlCount = (function () {
-            var $input = $('input', $panel),
-                val = Number($input.val());
-            return {
-                value: function () {
-                    return val;
-                },
-                up: function () {
-                    val += 1;
-                    $input.val(val);
-                },
-                down: function () {
-                    val -= 1;
-                    if (val < 1) {
-                        val = 1;
-                    }
-                    $input.val(val);
-                }
-            };
-        }()),
-        ctrlGenBKL = (function () {
-            var $btn = $('button.mbs-genBKL-btn', $panel),
-                dfr = $.Deferred();
-            $btn.on('click', function () {
-                dfr.notify();
-            });
-            return dfr.promise();
-        }()),
-        dfrBtn = $.Deferred(),
-        redrawCtrl;
-
-    (function () {
-        var $bklogLink = $('a.mbs-bklog-link', $panel);
-        setting.done(function (setting) {
-            $bklogLink.attr('href', setting.bklogUrl);
-        });
-    }());
-
-
+    // form subnit 抑止
     (function () {
         var $form = $('form', $panel);
         $form.on('submit', function () {
@@ -66,44 +19,107 @@ define(['jquery', 'setting'], function ($, setting) {
         });
     }());
 
-    ctrlPlusMinus.progress(function (dir) {
+    // + - ボタン
+    ctrlPlusMinus = (function () {
+        var
+            $pmBlock = $('span.mbs-plus-minus', $panel),
+            $buttons = $('button', $pmBlock),
+            $btnPlus = $buttons.eq(0),
+            $btnMinus = $buttons.eq(1),
+            clickCB = noop;
+
+        $btnPlus.on('click', function () {
+            clickCB('plus');
+        });
+        $btnMinus.on('click', function () {
+            clickCB('minus');
+        });
+
+        return {
+            setChangeCB: function (cb) {
+                clickCB = cb;
+            }
+        };
+    }());
+
+    // count input
+    ctrlCountInput = (function () {
+        var $input = $('input', $panel),
+            val = Number($input.val());
+        return {
+            value: function () {
+                return val;
+            },
+            up: function () {
+                val += 1;
+                $input.val(val);
+            },
+            down: function () {
+                val -= 1;
+                if (val < 1) {
+                    val = 1;
+                }
+                $input.val(val);
+            }
+        };
+    }());
+
+    // PlusMinusBtn - countInput behavior
+    ctrlPlusMinus.setChangeCB(function (dir) {
         //console.log('plus-minus:' + dir);
         if (dir === 'plus') {
-            ctrlCount.up();
+            ctrlCountInput.up();
         } else if (dir === 'minus') {
-            ctrlCount.down();
+            ctrlCountInput.down();
         }
     });
 
-    ctrlGenBKL.progress(function () {
-        //console.log('click gen bklog:' + ctrlCount.value());
-        dfrBtn.notify(ctrlCount.value());
+    // Gen-Booklog button
+    ctrlGenBKLBtn = (function () {
+        var $btn = $('button.mbs-genBKL-btn', $panel),
+            clickCB = noop;
 
-        ctrlCount.up();
-    });
-
-    function show() {
-        $panel.show();
-    }
-    function hide() {
-        $panel.hide();
-    }
-
-
-    redrawCtrl = (function () {
-        var $redraw = $('button.mbs-redraw', $panel),
-            clickNotify = $.Deferred();
-        $redraw.on('click', function () {
-            clickNotify.notify();
+        $btn.on('click', function () {
+            clickCB();
         });
         return {
-            click: clickNotify.promise()
+            setClickCB: function (cb) {
+                clickCB = cb;
+            }
         };
-
     }());
-    return dfrBtn.promise({
-        show: show,
-        hide: hide,
-        redrawCtrl: redrawCtrl
-    });
+
+    // booklog link
+    (function () {
+        var $bklogLink = $('a.mbs-bklog-link', $panel);
+        setting.done(function (setting) {
+            $bklogLink.attr('href', setting.bklogUrl);
+        });
+    }());
+
+    // Redraw Button
+    ctrlRedrawBtn = (function () {
+        var $redraw = $('button.mbs-redraw', $panel),
+            clickCB = noop;
+
+        $redraw.on('click', function () {
+            clickCB();
+        });
+        return {
+            setClickCB: function (cb) {
+                clickCB = cb;
+            }
+        };
+    }());
+
+    return {
+        setGenBKLBtnClickCB: function (cb) {
+            ctrlGenBKLBtn.setClickCB(function () {
+                //console.log('click gen bklog:' + ctrlCount.value());
+                cb(ctrlCountInput.value());
+                ctrlCountInput.up();
+            });
+        },
+        setRedrawBtnClikcCB: ctrlRedrawBtn.setClickCB
+    };
 });

@@ -179,12 +179,10 @@ require([
     });
 
     // 再描画ボタンクリック
-    viewBKLog.redrawCtrl.click.progress(function () {
-        redrawFolderView();
-    });
+    viewBKLog.setRedrawBtnClikcCB(redrawFolderView);
 
     // 生成ボタンクリック
-    viewBKLog.progress(function (count) {
+    viewBKLog.setGenBKLBtnClickCB(function (count) {
         var req;
         console.log('count=' + count);
         req = requestGenBKL(count);
