@@ -4,7 +4,7 @@
 module.exports = (function () {
     'use strict';
     var deferred = require('jquery-deferred').Deferred,
-        when = require('jquery-deferred').when,
+        //when = require('jquery-deferred').when,
         fs = require('fs'),
         path = require('path'),
 
@@ -57,18 +57,18 @@ module.exports = (function () {
                 });
             });
         }).then(function (stats) {
-            return {
+            return Promise.resolve({
                 name: filename,
                 isFolder: stats.isFolder,
                 isXinfo: stats.isXinfo
-            };
+            });
         }).catch(function (err) {
-            return {
+            return Promise.reject({
                 name: filename,
                 error: 'error',
                 statErr: err.statErr,
                 xinfoErr: err.xinfoErr
-            };
+            });
         });
     }
 
@@ -80,14 +80,8 @@ module.exports = (function () {
                 files.forEach(function (filename) {
                     queryStats.push(getBookFolderInfo(filename));
                 });
-                when.apply(null, queryStats).done(function () {
-                    var len = arguments.length,
-                        argv = [],
-                        idx;
-                    for (idx = 0; idx < len; idx += 1) {
-                        argv.push(arguments[idx]);
-                    }
-                    dfr.resolve(argv);
+                Promise.all(queryStats).then(function (statList) {
+                    dfr.resolve(statList);
                 });
             } else {
                 dfr.reject(err);
