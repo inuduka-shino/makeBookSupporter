@@ -26,7 +26,7 @@ require([
         viewFileList = viewCtrl.viewFileList,
         viewCategoryList = viewCtrl.viewCategoryList,
         viewFileListButton = viewCtrl.viewFileListButton,
-        viewLoading = viewCtrl.viewLoading,
+        //viewLoading = viewCtrl.viewLoading,
 
         genCategoryManager = categoryManager.genCategoryManager,
         categoryDict = categoryManager.categoryDict,
@@ -154,7 +154,7 @@ require([
     (function () {
         redrawFolderView().then(function () {
             viewContainer.change('folderList');
-            viewLoading.hide();
+            viewContainer.hide('loading');
         });
     }());
 
