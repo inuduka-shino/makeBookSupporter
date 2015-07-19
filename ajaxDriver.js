@@ -54,26 +54,22 @@ module.exports = (function () {
             });
         }
         if (reqType === 'makeZipFile') {
-            return new Promise(function (resolve) {
-                zipBookFolder.makeZipFile(param.foldername, param.files)
-                    .then(function (result) {
-                        resolve({
-                            status: 'OK',
-                            result: result
-                        });
-                    });
-            });
+            return zipBookFolder.makeZipFile(param.foldername, param.files)
+                .then(function (result) {
+                    return {
+                        status: 'OK',
+                        result: result
+                    };
+                });
         }
         if (reqType === 'checkZipFile') {
-            return new Promise(function (resolve) {
-                zipBookFolder.checkZipFile(param.foldername)
-                    .then(function (zipCheck) {
-                        resolve({
-                            status: 'OK',
-                            zipCheck: zipCheck
-                        });
-                    });
-            });
+            return zipBookFolder.checkZipFile(param.foldername)
+                .then(function (zipCheck) {
+                    return {
+                        status: 'OK',
+                        zipCheck: zipCheck
+                    };
+                });
         }
         /*
         if (reqType === 'sample') {
