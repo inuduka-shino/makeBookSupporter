@@ -28,7 +28,8 @@ module.exports = (function () {
         }
         if (reqType === 'genBKL') {
             return new Promise(function (resolve) {
-                genBooklogFolder.genFolderAsync(param.count)
+                var count = param.count;
+                genBooklogFolder.genFolderAsync(count)
                     .then(function () {
                         resolve({
                             status: 'OK'
@@ -45,13 +46,11 @@ module.exports = (function () {
             });
         }
         if (reqType === 'queryJpgFiles') {
-            return new Promise(function (resolve) {
-                queryJpgFiles(param.name).then(function (result) {
-                    resolve({
-                        status: 'OK',
-                        files: result.files
-                    });
-                });
+            return queryJpgFiles(param.name).then(function (result) {
+                return {
+                    status: 'OK',
+                    files: result.files
+                };
             });
         }
         if (reqType === 'makeZipFile') {
