@@ -37,13 +37,11 @@ module.exports = (function () {
             });
         }
         if (reqType === 'queryBookFolders') {
-            return new Promise(function (resolve) {
-                queryBookFolders().then(function (folders) {
-                    resolve({
-                        status: 'OK',
-                        folders: folders
-                    });
-                });
+            return queryBookFolders().then(function (folders) {
+                return {
+                    status: 'OK',
+                    folders: folders
+                };
             });
         }
         if (reqType === 'queryJpgFiles') {

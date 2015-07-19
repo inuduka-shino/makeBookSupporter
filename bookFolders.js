@@ -1,11 +1,9 @@
 /*jslint node: true, indent: 4 , nomen:true */
-/*global jQuery, Promise */
+/*global Promise */
 
 module.exports = (function () {
     'use strict';
-    var deferred = require('jquery-deferred').Deferred,
-        //when = require('jquery-deferred').when,
-        fs = require('fs'),
+    var fs = require('fs'),
         path = require('path'),
 
         booksFolderPath;
@@ -15,8 +13,7 @@ module.exports = (function () {
     }
 
     function getBookFolderInfo(filename) {
-        var //statdfr = deferred(),
-            fullpath = path.join(booksFolderPath, filename),
+        var fullpath = path.join(booksFolderPath, filename),
             xinfopath = path.join(fullpath, 'xinfo.txt');
 
         //console.log(filename);
@@ -30,10 +27,10 @@ module.exports = (function () {
             });
         }).then(function (stats) {
             if (stats.isDirectory() === false) {
-                return Promise.resolve({
+                return {
                     isFolder: false,
                     isXinfo: undefined
-                });
+                };
             }
             return new Promise(function (resolve, reject) {
                 fs.stat(xinfopath, function (errXinfo, statsXinfo) {
@@ -57,11 +54,11 @@ module.exports = (function () {
                 });
             });
         }).then(function (stats) {
-            return Promise.resolve({
+            return {
                 name: filename,
                 isFolder: stats.isFolder,
                 isXinfo: stats.isXinfo
-            });
+            };
         }).catch(function (err) {
             return Promise.reject({
                 name: filename,
@@ -73,22 +70,21 @@ module.exports = (function () {
     }
 
     function query() {
-        var dfr = deferred();
-        fs.readdir(booksFolderPath, function (err, files) {
+        return new Promise(function (resolve, reject) {
             var queryStats = [];
-            if (!err) {
-                files.forEach(function (filename) {
-                    queryStats.push(getBookFolderInfo(filename));
-                });
-                Promise.all(queryStats).then(function (statList) {
-                    dfr.resolve(statList);
-                });
-            } else {
-                dfr.reject(err);
-            }
+            fs.readdir(booksFolderPath, function (err, files) {
+                if (!err) {
+                    files.forEach(function (filename) {
+                        queryStats.push(getBookFolderInfo(filename));
+                    });
+                    resolve(Promise.all(queryStats));
+                } else {
+                    reject(err);
+                }
+            });
+
         });
 
-        return dfr.promise();
     }
 
     return {
