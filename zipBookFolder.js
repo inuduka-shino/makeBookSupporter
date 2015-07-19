@@ -1,11 +1,9 @@
 /*jslint node: true, indent: 4 , nomen:true */
-/*global jQuery */
+/*global Promise */
 
 module.exports = (function () {
     'use strict';
-    var deferred = require('jquery-deferred').Deferred,
-        when = require('jquery-deferred').when,
-        path = require('path'),
+    var path = require('path'),
         fs = require('fs'),
         archiver = require('archiver'),
         jpgFiles = require('./jpgFiles'),
@@ -22,36 +20,37 @@ module.exports = (function () {
     }
 
     function checkZipFile(folderName) {
-        var dfr = deferred(),
-            zipFilePath = zipBookFilePath(folderName);
+        var zipFilePath = zipBookFilePath(folderName);
 
-        fs.open(zipFilePath, 'r', function (err, fd) {
-            if (err) {
-                // console.log('zipCHeck:' + folderName);
-                // console.log(err);
-                if (err.code === 'ENOENT') {
-                    dfr.resolve({
-                        exists: 'no',
-                        zipFilePath: zipFilePath
-                    });
+        return new Promise(function (resolve) {
+            fs.open(zipFilePath, 'r', function (err, fd) {
+                if (err) {
+                    // console.log('zipCHeck:' + folderName);
+                    // console.log(err);
+                    if (err.code === 'ENOENT') {
+                        resolve({
+                            exists: 'no',
+                            zipFilePath: zipFilePath
+                        });
+                    } else {
+                        resolve({
+                            exists: 'unknown',
+                            zipFilePath: zipFilePath
+                        });
+                    }
                 } else {
-                    dfr.resolve({
-                        exists: 'unknown',
-                        zipFilePath: zipFilePath
+                    fs.close(fd, function () {
+                        resolve({
+                            exists: 'yes',
+                            zipFilePath: zipFilePath
+                        });
                     });
                 }
-            } else {
-                fs.close(fd, function () {
-                    dfr.resolve({
-                        exists: 'yes',
-                        zipFilePath: zipFilePath
-                    });
-                });
-            }
-        });
+            });
 
-        return dfr.promise();
+        });
     }
+
     function checkFiles(foldername, files) {
         return jpgFiles.query(foldername).then(function (jpgFilesInfo) {
             var idx,
@@ -106,41 +105,41 @@ module.exports = (function () {
             };
         };
     }());
+
     function makeZipFile(folderName, files) {
-        var dfr = deferred();
-        when(
+        return Promise.all([
             checkZipFile(folderName),
             checkFiles(folderName, files)
-        ).done(function (zipFileStatus, filesStatus) {
-            var zipArchive;
+        ]).then(function (args) {
+            var zipFileStatus = args[0],
+                filesStatus = args[1],
+                zipArchive;
             if (zipFileStatus.exists !== 'no') {
-                dfr.resolve({
+                return {
                     makeZipFileStatus: 'ng',
                     reason: zipFileStatus.reason
-                });
-            } else if (filesStatus.result !== 'ok') {
-                dfr.resolve({
+                };
+            }
+            if (filesStatus.result !== 'ok') {
+                return {
                     makeZipFileStatus: 'ng',
                     reason: 'zip file already exists.'
-                });
-            } else {
-                //console.log(zipFilePath);
-                //console.log(zipFolderPath);
-                zipArchive = zipArchiver(zipFileStatus.zipFilePath);
-                filesStatus.fullpathList.forEach(function (filepath, idx) {
-                    zipArchive.append(files[idx], filepath);
-                });
-                zipArchive.finalize(function () {
-                    console.log('gen ' + zipFileStatus.zipFilePath);
-                    dfr.resolve({
-                        makeZipFileStatus: 'ok'
-                    });
-
-                });
+                };
             }
-        });
+            //console.log(zipFilePath);
+            //console.log(zipFolderPath);
+            zipArchive = zipArchiver(zipFileStatus.zipFilePath);
+            filesStatus.fullpathList.forEach(function (filepath, idx) {
+                zipArchive.append(files[idx], filepath);
+            });
+            zipArchive.finalize(function () {
+                console.log('gen ' + zipFileStatus.zipFilePath);
+                return {
+                    makeZipFileStatus: 'ok'
+                };
 
-        return dfr.promise();
+            });
+        });
     }
 
     return {

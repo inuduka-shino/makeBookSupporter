@@ -11,7 +11,7 @@ module.exports = (function () {
     var router = require('express').Router({
             strict: false
         }),
-        ajaxDriverAsync = require('./ajaxDriver').driverAsync;
+        driverPromise = require('./ajaxDriver').driverPromise;
 
     router.use(/^\//, function (req, res) {
         unuseVars(req);
@@ -25,12 +25,12 @@ module.exports = (function () {
         //console.log(req.params.ajaxtype);
         //console.log(req.body);
         try {
-            ajaxDriverAsync(req.params.ajaxtype, req.body)
-                .done(function (response) {
+            driverPromise(req.params.ajaxtype, req.body)
+                .then(function (response) {
                     // console.log('async done!');
                     res.json(response);
                 })
-                .fail(function (error) {
+                .catch(function (error) {
                     res.status(501).json(error);
                 });
 
@@ -63,4 +63,3 @@ module.exports = (function () {
     });
     return router;
 }());
-
