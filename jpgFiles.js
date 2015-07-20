@@ -1,9 +1,9 @@
 /*jslint node: true, indent: 4 , nomen:true */
-/*global jQuery */
+/*global Promise */
 
 module.exports = (function () {
     'use strict';
-    var deferred = require('jquery-deferred').Deferred,
+    var // deferred = require('jquery-deferred').Deferred,
         //when = require('jquery-deferred').when,
         fs = require('fs'),
         path = require('path'),
@@ -15,24 +15,24 @@ module.exports = (function () {
     }
 
     function query(foldername) {
-        var dfr = deferred(),
-            folderPath = path.join(booksFolderPath, foldername);
-        fs.readdir(folderPath, function (err, files) {
-            if (!err) {
-                dfr.resolve({
-                    files: files.map(function (filename) {
-                        return {
-                            name: filename
-                        };
-                    }),
-                    folderPath: folderPath
-                });
-            } else {
-                dfr.reject(err);
-            }
-        });
+        var folderPath = path.join(booksFolderPath, foldername);
 
-        return dfr.promise();
+        return new Promise(function (resolve, reject) {
+            fs.readdir(folderPath, function (err, files) {
+                if (!err) {
+                    resolve({
+                        files: files.map(function (filename) {
+                            return {
+                                name: filename
+                            };
+                        }),
+                        folderPath: folderPath
+                    });
+                } else {
+                    reject(err);
+                }
+            });
+        });
     }
 
     return {
@@ -40,4 +40,3 @@ module.exports = (function () {
         query: query
     };
 }());
-

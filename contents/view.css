@@ -1,9 +1,34 @@
+div#mbs-container-loading {
+    display: block;
+}
+div#mbs-container-scanFolder {
+    display: block;
+}
+div#mbs-container-folderList {
+    display: none;
+}
+div#mbs-container-fileList {
+    display: none;
+}
+
 div.mbs-folder-list-ctrl div.list-group a.list-group-item  span.folderName {
     margin-left:    5px;
 }
 div.mbs-folder-list-ctrl div.list-group a.list-group-item  span.glyphicon.golden {
     color: Goldenrod
 }
+div.mbs-folder-list-ctrl div.list-group a.list-group-item  div.mbs-folderlist-icons {
+    padding-left: 8px;
+}
+
+div.mbs-folder-list-ctrl div.list-group a.list-group-item  div.mbs-folderlist-icons button {
+    margin-left: 7px;
+    padding: 2px;
+}
+div.mbs-folder-list-ctrl div.list-group a.list-group-item  div.mbs-folderlist-icons button.mbs-disabled {
+    background-color: gray;
+}
+
 div.mbs-file-list-ctrl div.panel-heading > span.glyphicon.golden {
     color: Goldenrod
 }
@@ -26,4 +51,3 @@ div.mbs-file-list-ctrl div.mbs-scrollbox {
     max-height: 300px;
     overflow-y: auto;
 }
-

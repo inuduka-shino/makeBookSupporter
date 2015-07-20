@@ -1,5 +1,5 @@
 /*jslint indent: 4 */
-/*global require, console */
+/*global require, console, Promise */
 require([
     'jquery',
     'jsonCall',
@@ -26,6 +26,7 @@ require([
         viewFileList = viewCtrl.viewFileList,
         viewCategoryList = viewCtrl.viewCategoryList,
         viewFileListButton = viewCtrl.viewFileListButton,
+        //viewLoading = viewCtrl.viewLoading,
 
         genCategoryManager = categoryManager.genCategoryManager,
         categoryDict = categoryManager.categoryDict,
@@ -83,35 +84,78 @@ require([
         });
 
         // fileList panel 初期化
-        // TODO loading... message
         viewFilePanel.setTitle(fileInfo);
         viewFileList.clearFiles();
         viewContainer.change('fileList');
     }
+
+    function clickZipBtnHandler(fileInfo) {
+        console.log('clickZipBtnHandler');
+        console.log(fileInfo);
+        /*
+        requestMakeZipFile(name, files).done(function (response) {
+            if (response.result.makeZipFileStatus === 'ok') {
+                viewFileListButton.zipBtnCtrl.disable();
+                // zip後のbehavior
+                // zipbutton disable
+                console.log('ziped.');
+            }
+        });
+        */
+
+    }
+
+    function zipFileBasename(filename) {
+        /*jslint regexp: true */
+        var zipFilePattern = /(.*)\.zip$/;
+        /*jslint regexp: true*/
+
+        if (zipFilePattern.test(filename)) {
+            return RegExp.$1;
+        }
+        return undefined;
+    }
+
     // BookFolder情報取得＆描画
     function redrawFolderView() {
-        queryBookFolders().done(function (response) {
+        return Promise.resolve(queryBookFolders()).then(function (response) {
+            var folderItems = {};
             viewBookFolder.clear();
             response.folders.forEach(function (folder) {
-                var fileInfo = {
-                        name: folder.name
-                    };
+                var foldername = folder.name,
+                    fileInfo = {
+                        name: foldername
+                    },
+                    zfBasename;
                 if (folder.isXinfo) {
                     fileInfo.type = "bookFolder";
                 } else if (folder.isFolder) {
                     fileInfo.type = "folder";
                 } else {
                     fileInfo.type = "file";
+                    zfBasename = zipFileBasename(foldername);
                 }
-                viewBookFolder.add(fileInfo, clickFolderHandler.bind(null, fileInfo));
+
+                if ((zfBasename !== undefined) &&
+                        (folderItems[zfBasename] !== undefined)) {
+                    folderItems[zfBasename].disable();
+                } else {
+                    folderItems[foldername] = viewBookFolder.add(
+                        fileInfo,
+                        clickFolderHandler.bind(null, fileInfo),
+                        clickZipBtnHandler.bind(null, fileInfo)
+                    );
+                }
             });
         });
     }
 
     // 初期表示
     (function () {
-        viewContainer.change('folderList');
-        redrawFolderView();
+        redrawFolderView().then(function () {
+            viewContainer.change('folderList');
+            viewContainer.hide('loading');
+        });
     }());
 
     // ファイルリスト　戻るボタン
@@ -135,12 +179,10 @@ require([
     });
 
     // 再描画ボタンクリック
-    viewBKLog.redrawCtrl.click.progress(function () {
-        redrawFolderView();
-    });
+    viewBKLog.setRedrawBtnClikcCB(redrawFolderView);
 
     // 生成ボタンクリック
-    viewBKLog.progress(function (count) {
+    viewBKLog.setGenBKLBtnClickCB(function (count) {
         var req;
         console.log('count=' + count);
         req = requestGenBKL(count);
