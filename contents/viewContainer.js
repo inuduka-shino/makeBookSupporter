@@ -58,6 +58,8 @@ define(['jquery'], function ($) {
 
     (function () {
         containers.add('loading', $('div#mbs-container-loading'));
+        containers.add('scanFolder', $('div#mbs-container-scanFolder'));
+
         containers.add('folderList', $('div#mbs-container-folderList'), {
             changable: true
         });

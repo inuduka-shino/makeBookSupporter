@@ -1,8 +1,14 @@
-div.container-fluid {
+div#mbs-container-loading {
+    display: block;
+}
+div#mbs-container-scanFolder {
+    display: block;
+}
+div#mbs-container-folderList {
     display: none;
 }
-div.container-fluid#mbs-container-loading {
-    display: block;
+div#mbs-container-fileList {
+    display: none;
 }
 
 div.mbs-folder-list-ctrl div.list-group a.list-group-item  span.folderName {
