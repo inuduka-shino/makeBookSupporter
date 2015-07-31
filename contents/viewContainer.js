@@ -55,6 +55,9 @@ define(['jquery'], function ($) {
     function hide(containerName) {
         containers.get(containerName).hide();
     }
+    function show(containerName) {
+        containers.get(containerName).show();
+    }
 
     (function () {
         containers.add('loading', $('div#mbs-container-loading'));
@@ -70,6 +73,7 @@ define(['jquery'], function ($) {
 
     return {
         change: change,
-        hide: hide
+        hide: hide,
+        show: show
     };
 });

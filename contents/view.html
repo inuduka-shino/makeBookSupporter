@@ -52,6 +52,58 @@
       </div>
     </div>
 
+    <!-- ScanFolder panel -->
+    <div class="container-fluid" id="mbs-container-scanFolder">
+        <div class="panel panel-default">
+          <div class="panel-heading">
+              Scan Folder
+          </div>
+          <div class="panel-body mbs-tabs-panel">
+
+              <div>
+
+                <!-- Nav tabs -->
+                <ul class="nav nav-tabs" role="tablist">
+                  <li role="presentation" class="active"><a href="#mbs-scanFolder-gray" aria-controls="mbs-scanFolder-gray" role="tab" data-toggle="pill">白黒</a></li>
+                  <li role="presentation"><a href="#mbs-scanFolder-colorM" aria-controls="mbs-scanFolder-colorM" role="tab" data-toggle="pill">
+                      カラー（両面）</a></li>
+                  <li role="presentation"><a href="#mbs-scanFolder-colorS" aria-controls="mbs-scanFolder-colorS" role="tab" data-toggle="pill">
+                      カラー（片面）/帯</a></li>
+                  <li role="presentation"><a href="#mbs-scanFolder-band" aria-controls="mbs-scanFolder-band" role="tab" data-toggle="pill">
+                      WORK</a></li>
+                </ul>
+
+                <!-- Tab panes -->
+                <div class="tab-content">
+                  <div role="tabpanel" class="tab-pane fade in active" id="mbs-scanFolder-gray">
+                      <form class="form-inline">
+                          <select class="form-control">
+                          </select>
+                          <button class="btn btn-success" data-loading-text="移動中...">
+                              移動
+                          </button>
+                          <span class="text-danger mbs-message">message</span>
+                      </form>
+                  </div>
+                  <div role="tabpanel" class="tab-pane fade" id="mbs-scanFolder-colorM">BBBB</div>
+                  <div role="tabpanel" class="tab-pane fade" id="mbs-scanFolder-colorS">
+                      <form class="form-inline">
+                          <select class="form-control">
+                          </select>
+                          <button class="btn btn-success" data-loading-text="移動中...">
+                              移動
+                          </button>
+                          <span class="text-danger mbs-message">message</span>
+                      </form>
+                  </div>
+                  <div role="tabpanel" class="tab-pane fade" id="mbs-scanFolder-band">DDDD</div>
+                </div>
+
+              </div>
+          </div>
+      </div>
+    </div>
+
     <!-- button&Folder panel -->
     <div class="container-fluid" id="mbs-container-folderList">
         <div class="panel panel-default mbs-gbl-ctrl">
@@ -126,7 +178,7 @@
                       <a href="#" class="list-group-item">
                           <span class="glyphicon glyphicon-pawn" aria-hidden="true"></span>
                           <span class="categoryName">category name</span>
-                          <span class="badge mbs-ctg-file-count">-<1/span>
+                          <span class="badge mbs-ctg-file-count">-</span>
                       </a>
                     </template>
                 </div>

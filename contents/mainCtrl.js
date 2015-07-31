@@ -1,11 +1,12 @@
-/*jslint indent: 4 */
+/*jslint indent: 4, es5: true */
 /*global require, console, Promise */
 require([
     'jquery',
     'jsonCall',
     'categoryManager',
     'viewCtrl',
-    'bootstrap'
+    'bootstrap',
+    'ctrlScanfolders'
 ], function (
     $,
     jsonCall,
@@ -26,12 +27,13 @@ require([
         viewFileList = viewCtrl.viewFileList,
         viewCategoryList = viewCtrl.viewCategoryList,
         viewFileListButton = viewCtrl.viewFileListButton,
-        //viewLoading = viewCtrl.viewLoading,
+        grayCtrl = viewCtrl.viewScanFolders.grayCtrl,
 
         genCategoryManager = categoryManager.genCategoryManager,
         categoryDict = categoryManager.categoryDict,
 
         currentSelectedFileInfo;
+
 
 
     // category
@@ -50,6 +52,7 @@ require([
         });
 
     }
+
 
     // BookFolderクリック
     function clickFolderHandler(fileInfo) {
@@ -121,14 +124,17 @@ require([
         return Promise.resolve(queryBookFolders()).then(function (response) {
             var folderItems = {};
             viewBookFolder.clear();
+            grayCtrl.clearOption();
             response.folders.forEach(function (folder) {
                 var foldername = folder.name,
                     fileInfo = {
                         name: foldername
                     },
                     zfBasename;
+
                 if (folder.isXinfo) {
                     fileInfo.type = "bookFolder";
+                    grayCtrl.addOption(foldername);
                 } else if (folder.isFolder) {
                     fileInfo.type = "folder";
                 } else {
@@ -146,6 +152,7 @@ require([
                         clickZipBtnHandler.bind(null, fileInfo)
                     );
                 }
+
             });
         });
     }
@@ -154,6 +161,7 @@ require([
     (function () {
         redrawFolderView().then(function () {
             viewContainer.change('folderList');
+            viewContainer.show('scanFolder');
             viewContainer.hide('loading');
         });
     }());

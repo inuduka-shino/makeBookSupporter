@@ -7,7 +7,8 @@ define([
     'viewFilePanel',
     'viewFileList',
     'viewCategoryList',
-    'viewFileListButton'
+    'viewFileListButton',
+    'viewScanFolders'
 ], function (
     viewContainer,
     viewBKLog,
@@ -15,8 +16,8 @@ define([
     viewFilePanel,
     viewFileList,
     viewCategoryList,
-    viewFileListButton
-
+    viewFileListButton,
+    viewScanFolders
 ) {
     'use strict';
     return {
@@ -26,6 +27,7 @@ define([
         viewFilePanel:  viewFilePanel,
         viewFileList:   viewFileList,
         viewCategoryList:   viewCategoryList,
-        viewFileListButton: viewFileListButton
+        viewFileListButton: viewFileListButton,
+        viewScanFolders: viewScanFolders
     };
 });
