@@ -11,6 +11,7 @@ module.exports = (function () {
     var router = require('express').Router({
             strict: false
         }),
+        dynamicImage = require('./dynamicImage'),
         driverPromise = require('./ajaxDriver').driverPromise;
 
     router.use(/^\//, function (req, res) {
@@ -43,6 +44,23 @@ module.exports = (function () {
                 throw ev;
             }
         }
+    });
+
+    router.use('/image/:jpegtype/:jpegfile(*.jpg)', function (req, res) {
+        dynamicImage.getBuffer({
+            jpegfile: req.params.jpegfile,
+            jpegtype: req.params.jpegtype,
+            query: req.query
+        }).then(function (imageBuffer) {
+            res
+                .status(200)
+                .set({'Content-Type': 'image/jpeg' })
+                .send(imageBuffer);
+        }).catch(function (err) {
+            res.status(501).json({
+                err: err
+            });
+        });
     });
 
     router.use(':htmlfile(*.html)', function (req, res) {

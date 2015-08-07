@@ -4,7 +4,8 @@
 module.exports = (function () {
     'use strict';
     var path = require('path'),
-        fs = require('fs'),
+        fsUtil = require('./fsUtil'),
+        imageMagicUtil = require('./imagemagickUtil'),
         setting,
 
         jpgFileName,
@@ -44,8 +45,12 @@ module.exports = (function () {
             },
             jacket: {
                 frontPrefix: setting_scanFolders.jacket.frontPrefix,
+                frontJacketFolderPath: path.join(
+                    setting_scanFolders.basePath,
+                    setting_scanFolders.jacket.frontpath
+                ),
                 prefix: setting_scanFolders.jacket.prefix,
-                folderPath: path.join(
+                jacketFolderPath: path.join(
                     setting_scanFolders.basePath,
                     setting_scanFolders.jacket.path
                 )
@@ -140,68 +145,7 @@ module.exports = (function () {
         };
     }());
 
-    function readdir(folderPath) {
-        return new Promise(function (resolve, reject) {
-            fs.readdir(folderPath, function (err, files) {
-                if (err) {
-                    reject(err);
-                } else {
-                    resolve(files);
-                }
-            });
-        });
-    }
-    function rename(srcPath, dstPath) {
-        return new Promise(function (resolve, reject) {
-            fs.rename(srcPath, dstPath, function (err) {
-                if (err) {
-                    reject(err);
-                } else {
-                    resolve();
-                }
-            });
-        });
-    }
-    function copy(srcPath, dstPath) {
-        return Promise.all([
-            new Promise(function (resolve, reject) {
-                var stream = fs.createReadStream(srcPath);
-                stream
-                    .on('open', function () {
-                        resolve(stream);
-                    })
-                    .on('error', function (err) {
-                        reject(err);
-                    });
-            }),
-            new Promise(function (resolve, reject) {
-                var stream = fs.createWriteStream(dstPath, {flags: 'wx'});
-                //"wx"はファイルが存在するとエラー
-                stream
-                    .on('open', function () {
-                        resolve(stream);
-                    })
-                    .on('error', function (err) {
-                        reject(err);
-                    });
-            })
-        ]).then(function (streams) {
-            var srcStream = streams[0],
-                dstStream = streams[1];
-            return new Promise(function (resolve) {
-                srcStream
-                    .on('data', function (chunk) {
-                        dstStream.write(chunk);
-                    })
-                    .on("close", function () {
-                        dstStream.end();
-                        resolve();
-                    });
-            });
-        });
-    }
-
-
+    console.log(setting.jacket);
     function genMoveFilesProcess(categoryType) {
         var
             srcFolderPath,
@@ -219,9 +163,9 @@ module.exports = (function () {
         if (categoryType === 'jacket') {
             srcFolderPath = setting.colorSF.folderPath;
             srcFilePattern = setting.colorSF.filePattern;
-            moveToFolderPath = setting.jacket.folderPath;
+            moveToFolderPath = setting.jacket.jacketFolderPath;
             moveToPrefix = setting.jacket.prefix;
-            copyToFolderPath = moveToFolderPath;
+            copyToFolderPath = setting.jacket.frontJacketFolderPath;
             copyToPrefix = setting.jacket.frontPrefix;
         } else if (categoryType === 'innercover') {
             srcFolderPath = setting.colorSF.folderPath;
@@ -239,6 +183,8 @@ module.exports = (function () {
             fnParserCP =  fileNameParser(copyToPrefix);
         }
 
+        console.log(categoryType + ' path:');
+        console.log([moveToFolderPath, copyToFolderPath].join(' - '));
         return function () {
             var targetDirs = [
                     srcFolderPath,
@@ -251,7 +197,7 @@ module.exports = (function () {
             }
 
             return Promise.all(targetDirs.map(function (dirPath) {
-                return readdir(dirPath);
+                return fsUtil.readdir(dirPath);
             })).then(function (filesArray) {
                 var srcFolderFiles = filesArray[0],
                     moveToFolderFiles = filesArray[1],
@@ -301,38 +247,34 @@ module.exports = (function () {
 
                 return Promise.all(srcFiles.map(function (filename) {
                     var srcFilePath,
-                        dstFilePathMV,
-                        dstFilePathCP,
-                        prePromise;
+                        dstFilePaths;
 
                     srcFilePath = path.join(srcFolderPath, filename);
-                    dstFilePathMV = path.join(
+                    dstFilePaths = [path.join(
                         moveToFolderPath,
                         filenameCtrlMV.genFilename()
-                    );
-                    if (filenameCtrlCP === undefined) {
-                        prePromise = Promise.resolve();
-                    } else {
-                        dstFilePathCP = path.join(
+                    )];
+
+                    if (filenameCtrlCP !== undefined) {
+                        dstFilePaths.push(path.join(
                             copyToFolderPath,
                             filenameCtrlCP.genFilename()
-                        );
-                        //console.log('-- copy --');
-                        //console.log([srcFilePath, dstFilePathCP].join(' -> '));
-                        prePromise = copy(
-                            srcFilePath,
-                            dstFilePathCP
-                        );
+                        ));
                     }
 
-                    return prePromise.then(function () {
-                        //console.log('-- move --');
-                        //console.log([srcFilePath, dstFilePathMV].join(' -> '));
-                        return rename(
-                            srcFilePath,
-                            dstFilePathMV
-                        );
-                    });
+                    return fsUtil
+                        .readFile(srcFilePath)
+                        .then(
+                            imageMagicUtil.converter({
+                                rotate: 90
+                            }).conv
+                        )
+                        .then(function (buff) {
+                            return Promise.all(dstFilePaths.map(function (filepath) {
+                                return fsUtil.writeFile(filepath, buff);
+                            }));
+                        })
+                        .then(fsUtil.remove.bind(null, srcFilePath));
 
                 }));
             }).then(function () {
@@ -366,8 +308,8 @@ module.exports = (function () {
             var targetFolderPath = bookFolderPath(foldername);
 
             return Promise.all([
-                readdir(grayFolderPath),
-                readdir(targetFolderPath)
+                fsUtil.readdir(grayFolderPath),
+                fsUtil.readdir(targetFolderPath)
             ]).then(function (results) {
                 var sourceFolderFiles = results[0],
                     destFolderFiles = results[1],
@@ -399,7 +341,7 @@ module.exports = (function () {
                         targetFolderPath,
                         genFilename()
                     );
-                    return rename(srcFilepath, destFilepath);
+                    return fsUtil.rename(srcFilepath, destFilepath);
                 }));
             }).then(function () {
                 return {
