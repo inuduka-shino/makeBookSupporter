@@ -21,7 +21,7 @@ module.exports = (function () {
         },
         innercover: {
             path: 'work',
-            prefix: 'PAC'
+            prefix: 'PAD'
         },
         bandF: {
             path: 'Color-E',
@@ -29,7 +29,7 @@ module.exports = (function () {
         },
         band: {
             path: 'work',
-            prefix: 'PAD'
+            prefix: 'PAC'
         }
 
     };
