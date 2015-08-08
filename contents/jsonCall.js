@@ -1,5 +1,5 @@
 /*jslint indent: 4 */
-/*global define */
+/*global define, Promise */
 define(['jquery'], function ($) {
     'use strict';
     function jsonCall(url, param) {
@@ -11,9 +11,24 @@ define(['jquery'], function ($) {
             contentType: 'application/json',
             data: JSON.stringify(param),
 
-            dataType: 'json',
+            dataType: 'json'
         });
         return jqXHR;
+    }
+    function jsonCallPromise(url, param) {
+        return new Promise(function (resolve, reject) {
+            try {
+                jsonCall(url, param)
+                    .done(function (response) {
+                        resolve(response);
+                    })
+                    .fail(function (response) {
+                        reject(response);
+                    });
+            } catch (err) {
+                reject(err);
+            }
+        });
     }
 
     function loadSetting() {
@@ -106,6 +121,32 @@ define(['jquery'], function ($) {
             }
         );
     }
+    function requestMoveGrayJpg(foldername) {
+        return jsonCallPromise(
+            'api/requestMoveGrayJpg',
+            {
+                foldername: foldername
+            }
+        );
+    }
+    function requestMoveJacketFiles() {
+        return jsonCallPromise(
+            'api/requestMoveJacketFiles'
+
+        );
+    }
+    function requestMoveInnerCoverFiles() {
+        return jsonCallPromise(
+            'api/requestMoveInnerCoverFiles'
+
+        );
+    }
+    function requestMoveBandFiles() {
+        return jsonCallPromise(
+            'api/requestMoveBandFiles'
+
+        );
+    }
 
     return {
         loadSetting: loadSetting,
@@ -113,6 +154,11 @@ define(['jquery'], function ($) {
         queryBookFolders: queryBookFolders,
         queryJpgFiles: queryJpgFiles,
         checkZipFile: checkZipFile,
-        makeZipFile: makeZipFile
+        makeZipFile: makeZipFile,
+        requestMoveGrayJpg: requestMoveGrayJpg,
+        requestMoveJacketFiles: requestMoveJacketFiles,
+        requestMoveInnerCoverFiles: requestMoveInnerCoverFiles,
+        requestMoveBandFiles: requestMoveBandFiles
+
     };
 });

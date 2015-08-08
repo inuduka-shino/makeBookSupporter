@@ -11,6 +11,7 @@ module.exports = (function () {
         queryJpgFiles = jpgFilesCntrl.query,
         bookFolderBasePath = require('../setting/setting_booklog').basePath,
         zipBookFolder = require('./zipBookFolder'),
+        scanFolder =  require('./scanFolder'),
         localSetting = require('../setting/setting_booklog').local;
 
     bookFoldersCntrl.init(bookFolderBasePath);
@@ -70,6 +71,18 @@ module.exports = (function () {
                         zipCheck: zipCheck
                     };
                 });
+        }
+        if (reqType === 'requestMoveGrayJpg') {
+            return scanFolder.moveGrayFolderFiles(param.foldername);
+        }
+        if (reqType === 'requestMoveJacketFiles') {
+            return scanFolder.moveJacketFiles();
+        }
+        if (reqType === 'requestMoveInnerCoverFiles') {
+            return scanFolder.moveInnerCoverFiles();
+        }
+        if (reqType === 'requestMoveBandFiles') {
+            return scanFolder.moveBandFiles();
         }
         /*
         if (reqType === 'sample') {

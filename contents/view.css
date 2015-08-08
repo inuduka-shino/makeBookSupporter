@@ -2,7 +2,7 @@ div#mbs-container-loading {
     display: block;
 }
 div#mbs-container-scanFolder {
-    display: block;
+    display: none;
 }
 div#mbs-container-folderList {
     display: none;
@@ -14,7 +14,8 @@ div#mbs-container-fileList {
 div.mbs-folder-list-ctrl div.list-group a.list-group-item  span.folderName {
     margin-left:    5px;
 }
-div.mbs-folder-list-ctrl div.list-group a.list-group-item  span.glyphicon.golden {
+
+span.glyphicon.golden {
     color: Goldenrod
 }
 div.mbs-folder-list-ctrl div.list-group a.list-group-item  div.mbs-folderlist-icons {
@@ -50,4 +51,20 @@ div.mbs-file-list-ctrl div.mbs-button-list > button.disabled {
 div.mbs-file-list-ctrl div.mbs-scrollbox {
     max-height: 300px;
     overflow-y: auto;
+}
+/* scan folder */
+div.mbs-tabs-panel {
+    padding: 5px 0px 0px 0px;
+}
+div.mbs-tabs-panel  a[role=tab] {
+    padding: 5px 15px;
+}
+div.mbs-tabs-panel li:first-child a[role=tab] {
+    margin-left: 5px;
+}
+div.mbs-tabs-panel div.tab-content {
+    padding: 5pt 10pt;
+}
+div.tab-content span.mbs-message{
+    margin-left: 20px;
 }
