@@ -145,7 +145,6 @@ module.exports = (function () {
         };
     }());
 
-    console.log(setting.jacket);
     function genMoveFilesProcess(categoryType) {
         var
             srcFolderPath,
@@ -183,8 +182,6 @@ module.exports = (function () {
             fnParserCP =  fileNameParser(copyToPrefix);
         }
 
-        console.log(categoryType + ' path:');
-        console.log([moveToFolderPath, copyToFolderPath].join(' - '));
         return function () {
             var targetDirs = [
                     srcFolderPath,
@@ -363,6 +360,7 @@ module.exports = (function () {
     }());
 
     return {
+        setting: setting,
         moveGrayFolderFiles: moveGrayFolderFiles,
         moveJacketFiles: genMoveFilesProcess("jacket"),
         moveInnerCoverFiles:  genMoveFilesProcess("innercover"),

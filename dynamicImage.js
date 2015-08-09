@@ -2,11 +2,16 @@
 /*global  Promise */
 module.exports = (function () {
     'use strict';
-    var fsUtil = require('./fsUtil'),
+    var path = require('path'),
+        fsUtil = require('./fsUtil'),
         imagemagicUtil = require('./imagemagickUtil'),
+        setting = require('./scanFolder').setting,
+
+        bandFolderPath,
         converter_Fixsize;
 
- 
+    // console.log(setting);
+    bandFolderPath = setting.band.folderPath;
     converter_Fixsize = imagemagicUtil.converter({
         width: 150,
         height: 150,
@@ -21,12 +26,13 @@ module.exports = (function () {
 
             filename;
 
-        console.log(jpegtype);
-        console.log(jpegfile);
+        //onsole.log(jpegtype);
+        //console.log(jpegfile);
+        console.log(bandFolderPath);
         if (query.aaa === "1") {
-            filename = '/mnt/bookshelf/lib/Scan/work/PA001.jpg';
+            filename = path.join(bandFolderPath, 'PAD003.jpg');
         } else {
-            filename = '/mnt/bookshelf/lib/Scan/work/PA002.jpg';
+            filename = path.join(bandFolderPath, 'PAD003.jpg');
         }
 
 

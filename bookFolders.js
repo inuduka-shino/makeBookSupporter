@@ -3,92 +3,81 @@
 
 module.exports = (function () {
     'use strict';
-    var fs = require('fs'),
+    var //fs = require('fs'),
+        fsUtil = require('./fsUtil'),
         path = require('path'),
+        bookFolderBasePath = require('../setting/setting_booklog').basePath;
 
-        booksFolderPath;
-
-    function init(booksFolderPath0) {
-        booksFolderPath = booksFolderPath0;
-    }
-
-    function getBookFolderInfo(filename) {
-        var fullpath = path.join(booksFolderPath, filename),
+    function getBookFolderInfo(bookname) {
+        var fullpath = path.join(bookFolderBasePath, bookname),
             xinfopath = path.join(fullpath, 'xinfo.txt');
 
-        //console.log(filename);
-        return new Promise(function (resolve, reject) {
-            fs.stat(fullpath, function (err, stats) {
-                if (!err) {
-                    resolve(stats);
-                } else {
-                    reject({statErr: err});
-                }
-            });
-        }).then(function (stats) {
+        //console.log(bookname);
+        return fsUtil.stat(fullpath).then(function (stats) {
             if (stats.isDirectory() === false) {
                 return {
                     isFolder: false,
                     isXinfo: undefined
                 };
             }
-            return new Promise(function (resolve, reject) {
-                fs.stat(xinfopath, function (errXinfo, statsXinfo) {
-                    if (!errXinfo) {
-                        resolve({
-                            isFolder: true,
-                            isXinfo: true,
-                            statsXinfo: statsXinfo
-                        });
-                    } else {
-                        //console.log(errXinfo);
-                        if (errXinfo.code === 'ENOENT') {
-                            resolve({
-                                isFolder: true,
-                                isXinfo: false
-                            });
-                        } else {
-                            reject({errXinfo: errXinfo});
-                        }
-                    }
-                });
+            return fsUtil.stat(xinfopath).then(function (statsXinfo) {
+                return {
+                    isFolder: true,
+                    isXinfo: true,
+                    statsXinfo: statsXinfo
+                };
+            }, function (errXinfo) {
+                if (errXinfo.code === 'ENOENT') {
+                    return {
+                        isFolder: true,
+                        isXinfo: false
+                    };
+                }
             });
         }).then(function (stats) {
             return {
-                name: filename,
+                name: bookname,
                 isFolder: stats.isFolder,
                 isXinfo: stats.isXinfo
             };
         }).catch(function (err) {
+            return Promise.reject(err);
+            /*
             return Promise.reject({
-                name: filename,
+                name: bookname,
                 error: 'error',
                 statErr: err.statErr,
                 xinfoErr: err.xinfoErr
             });
+            */
         });
     }
 
     function query() {
-        return new Promise(function (resolve, reject) {
-            var queryStats = [];
-            fs.readdir(booksFolderPath, function (err, files) {
-                if (!err) {
-                    files.forEach(function (filename) {
-                        queryStats.push(getBookFolderInfo(filename));
-                    });
-                    resolve(Promise.all(queryStats));
-                } else {
-                    reject(err);
-                }
-            });
-
+        return fsUtil.readdir(bookFolderBasePath).then(function (booknameList) {
+            return Promise.all(booknameList.map(function (bookname) {
+                return getBookFolderInfo(bookname);
+            }));
         });
+    }
 
+    function queryJpegFiles(bookname) {
+        var folderPath = path.join(bookFolderBasePath, bookname);
+
+        return fsUtil.readdir(folderPath).then(function (files) {
+            return {
+                files: files.map(function (filename) {
+                    return {
+                        name: filename
+                    };
+                }),
+                folderPath: folderPath
+            };
+        });
     }
 
     return {
-        init: init,
-        query: query
+        query: query,
+        queryJpegFiles: queryJpegFiles
     };
 }());

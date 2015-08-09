@@ -4,6 +4,17 @@ module.exports = (function () {
     'use strict';
     var fs = require('fs');
 
+    function stat(filepath) {
+        return new Promise(function (resolve, reject) {
+            fs.stat(filepath, function (err, stat) {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve(stat);
+                }
+            });
+        });
+    }
     function readdir(folderPath) {
         return new Promise(function (resolve, reject) {
             fs.readdir(folderPath, function (err, files) {
@@ -154,6 +165,7 @@ module.exports = (function () {
 
 
     return {
+        stat: stat,
         readdir: readdir,
         rename: rename,
         readFile: readFile,
