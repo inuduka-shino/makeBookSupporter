@@ -8,7 +8,8 @@ module.exports = (function () {
         setting = require('./scanFolder').setting,
 
         bandFolderPath,
-        converter_Fixsize;
+        converter_Fixsize,
+        converter_fixHight;
 
     // console.log(setting);
     bandFolderPath = setting.band.folderPath;
@@ -18,9 +19,14 @@ module.exports = (function () {
         resizeStyle: 'aspectfit',
         gravity: 'Center'
     });
+    converter_fixHight = imagemagicUtil.converter({
+        height: 150,
+        resizeStyle: 'aspectfit',
+        gravity: 'Center'
+    });
 
     function getBuffer(arg) {
-        var jpegfile = arg.jpegfile,
+        var //jpegfile = arg.jpegfile,
             jpegtype = arg.jpegtype,
             query = arg.query,
 
@@ -28,6 +34,10 @@ module.exports = (function () {
 
         //onsole.log(jpegtype);
         //console.log(jpegfile);
+        if (jpegtype === 'band') {
+            filename = path.join(bandFolderPath, 'PAD003.jpg');
+            return fsUtil.readFile(filename).then(converter_fixHight.conv);
+        }
         console.log(bandFolderPath);
         if (query.aaa === "1") {
             filename = path.join(bandFolderPath, 'PAD003.jpg');

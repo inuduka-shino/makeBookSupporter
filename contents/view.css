@@ -73,3 +73,14 @@ div#mbs-container-scanFolder span.badge {
     font-size: 9px;
     margin-left: 5px;
 }
+
+div#mbs-scanFolder-band .list-group {
+    margin-top: 10px;
+}
+div#mbs-scanFolder-band .list-group li {
+    padding: 0px
+}
+div#mbs-scanFolder-band .list-group button{
+    padding: 2px 3px;
+    font-size: 8px;
+}
