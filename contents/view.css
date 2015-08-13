@@ -68,3 +68,8 @@ div.mbs-tabs-panel div.tab-content {
 div.tab-content span.mbs-message{
     margin-left: 20px;
 }
+
+div#mbs-container-scanFolder span.badge {
+    font-size: 9px;
+    margin-left: 5px;
+}

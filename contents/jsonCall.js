@@ -121,6 +121,14 @@ define(['jquery'], function ($) {
             }
         );
     }
+    function queryScanFolders(categoryType) {
+        return jsonCallPromise(
+            'api/queryScanFolders',
+            {
+                categoryType: categoryType
+            }
+        );
+    }
     function requestMoveGrayJpg(foldername) {
         return jsonCallPromise(
             'api/requestMoveGrayJpg',
@@ -155,6 +163,7 @@ define(['jquery'], function ($) {
         queryJpgFiles: queryJpgFiles,
         checkZipFile: checkZipFile,
         makeZipFile: makeZipFile,
+        queryScanFolders: queryScanFolders,
         requestMoveGrayJpg: requestMoveGrayJpg,
         requestMoveJacketFiles: requestMoveJacketFiles,
         requestMoveInnerCoverFiles: requestMoveInnerCoverFiles,

@@ -9,7 +9,9 @@ define(['jquery'], function ($) {
         genViewButton,
 
         colorSFCtrl,
-        grayCtrl;
+        grayCtrl,
+        badgesCtrl;
+
 
     genHandlers = (function () {
         function progress(handlers, handler) {
@@ -81,7 +83,29 @@ define(['jquery'], function ($) {
         });
     }
 
+    badgesCtrl = (function () {
+        var $ancorList = $('ul>li>a', $panel),
+            $badgeMap = {};
+        [
+            {category: 'gray', name: "mbs-scanFolder-gray"},
+            {category: 'colorSF', name: "mbs-scanFolder-colorS"},
+            {category: 'colorMF', name: "mbs-scanFolder-colorM"},
+            {category: 'band', name: "mbs-scanFolder-band"}
 
+        ].forEach(function (info) {
+            var $ancor;
+            $ancor = $ancorList.filter(
+                ['a[aria-controls=', info.name, ']'].join('')
+            );
+            $badgeMap[info.category] =  $('span.badge', $ancor);
+        });
+
+        return {
+            setCount: function (category, count) {
+                $badgeMap[category].text(count);
+            }
+        };
+    }());
     // color-SingleFace tab
     colorSFCtrl = (function () {
         var $tabpanel = $('div#mbs-scanFolder-colorS', $panel),
@@ -91,7 +115,6 @@ define(['jquery'], function ($) {
             viewMessage = genViewMessage($('span.mbs-message', $form)),
 
             clickHandlers;
-
 
         clickHandlers = assinFormButtonHandlers(
             $form,
@@ -153,7 +176,9 @@ define(['jquery'], function ($) {
         };
     }());
 
+
     return {
+        setBadgeCount: badgesCtrl.setCount,
         grayCtrl: grayCtrl,
         colorSFCtrl: colorSFCtrl
     };

@@ -43,6 +43,13 @@ module.exports = (function () {
                 ),
                 filePattern: setting_scanFolders.colorSF.filePattern
             },
+            colorMF: {
+                folderPath: path.join(
+                    setting_scanFolders.basePath,
+                    setting_scanFolders.colorMF.path
+                ),
+                filePattern: setting_scanFolders.colorMF.filePattern
+            },
             jacket: {
                 frontPrefix: setting_scanFolders.jacket.frontPrefix,
                 frontJacketFolderPath: path.join(
@@ -144,6 +151,46 @@ module.exports = (function () {
             };
         };
     }());
+
+    function queryScanFolders() {
+        return Promise.all([
+            {
+                categoryType: 'gray',
+                folderPath: setting.grayFolder.fullpath,
+                filePattern: setting.grayFolder.filePattern
+            }, {
+                categoryType: 'colorSF',
+                folderPath: setting.colorSF.folderPath,
+                filePattern: setting.colorSF.filePattern
+            }, {
+                categoryType: 'colorMF',
+                folderPath: setting.colorMF.folderPath,
+                filePattern: setting.colorMF.filePattern
+            }, {
+                categoryType: 'band',
+                folderPath: setting.bandF.folderPath,
+                filePattern: setting.bandF.filePattern
+            }
+        ].map(function (info) {
+            return fsUtil.readdir(info.folderPath).then(function (files) {
+                var filePattern = info.filePattern;
+                return {
+                    categoryType: info.categoryType,
+                    fileCount: files.filter(function (filename) {
+                        return filePattern.test(filename);
+                    }).length
+                };
+            });
+        })).then(function (dirInfos) {
+            var ret = {status: 'OK'};
+            console.log(dirInfos);
+            dirInfos.forEach(function (value) {
+                ret[value.categoryType] = value.fileCount;
+            });
+            console.log(ret);
+            return ret;
+        });
+    }
 
     function genMoveFilesProcess(categoryType) {
         var
@@ -361,6 +408,7 @@ module.exports = (function () {
 
     return {
         setting: setting,
+        queryScanFolders: queryScanFolders,
         moveGrayFolderFiles: moveGrayFolderFiles,
         moveJacketFiles: genMoveFilesProcess("jacket"),
         moveInnerCoverFiles:  genMoveFilesProcess("innercover"),

@@ -1,10 +1,21 @@
 /*jslint indent: 4, es5: true */
-/*global define, console, Promise, window */
+/*global define, console, Promise, window, $ */
 define([
     'viewScanFolders',
     'jsonCall'
 ], function (viewScanFolders, jsonCall) {
     'use strict';
+
+    function recount() {
+        var allCategory = [
+            'gray', 'colorSF', 'colorMF', 'band'
+        ];
+        jsonCall.queryScanFolders().then(function (info) {
+            allCategory.forEach(function (category) {
+                viewScanFolders.setBadgeCount(category, info[category]);
+            });
+        });
+    }
 
     // カラー片面　パネル
     (function () {
@@ -19,14 +30,17 @@ define([
                 if (selectedVal === 'Jacket') {
                     requestMoveJacketFiles().then(function (response) {
                         resolve(response);
+                        recount();
                     });
                 } else if (selectedVal === 'Cover') {
                     requestMoveInnerCoverFiles().then(function (response) {
                         resolve(response);
+                        recount();
                     });
                 } else if (selectedVal === '帯') {
                     requestMoveBandFiles().then(function (response) {
                         resolve(response);
+                        recount();
                     });
                 } else {
                     colorSFCtrl.message('unkown select value:' + selectedVal);
@@ -56,6 +70,8 @@ define([
                         grayCtrl.message('対象ファイルがありません。');
                     } else if (response.status === 'NOTMOVE') {
                         grayCtrl.message('同じカテゴリのファイルが在るためファイルは移動しませんでした。');
+                    } else {
+                        recount();
                     }
                 }).catch(function (err) {
                     grayCtrl.message('エラー発生');
@@ -68,4 +84,8 @@ define([
             grayCtrl.message();
         });
     }());
+
+    $(function () {
+        recount();
+    });
 });
