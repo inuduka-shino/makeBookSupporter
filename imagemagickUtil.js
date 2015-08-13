@@ -26,7 +26,25 @@ module.exports = (function () {
         };
     }
 
+    function identify(buffer) {
+        return new Promise(function (resolve, reject) {
+            imagemagic.identify({
+                srcData: buffer
+            }, function (err, result) {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve({
+                        identify: result,
+                        data: buffer
+                    });
+                }
+            });
+        });
+    }
+
     return {
-        converter: converter
+        converter: converter,
+        identify: identify
     };
 }());

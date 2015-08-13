@@ -183,11 +183,11 @@ module.exports = (function () {
             });
         })).then(function (dirInfos) {
             var ret = {status: 'OK'};
-            console.log(dirInfos);
+            //console.log(dirInfos);
             dirInfos.forEach(function (value) {
                 ret[value.categoryType] = value.fileCount;
             });
-            console.log(ret);
+            //console.log(ret);
             return ret;
         });
     }

@@ -78,9 +78,17 @@ div#mbs-scanFolder-band .list-group {
     margin-top: 10px;
 }
 div#mbs-scanFolder-band .list-group li {
-    padding: 0px
+    padding: 0px;
 }
-div#mbs-scanFolder-band .list-group button{
-    padding: 2px 3px;
-    font-size: 8px;
+div#mbs-scanFolder-band .list-group li > div:nth-child(2){
+    padding: 0px;
+    overflow-y: auto;
+}
+div#mbs-scanFolder-band .list-group li > div:nth-child(1) > div{
+    margin: 5px;
+}
+div#mbs-scanFolder-band .list-group li > div:nth-child(1) > button {
+    margin: 5px;
+    padding: 5px 10px;
+    font-size: 12px;
 }

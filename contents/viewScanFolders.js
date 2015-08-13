@@ -10,6 +10,7 @@ define(['jquery'], function ($) {
 
         colorSFCtrl,
         grayCtrl,
+        bandCtrl,
         badgesCtrl;
 
 
@@ -55,10 +56,24 @@ define(['jquery'], function ($) {
             $button.button('reset');
             $button.prop('disabled', false);
         }
+        function click($button, handler) {
+            var ret;
+            $button.on('click', function () {
+                //console.log('reverse button click');
+                processed($button);
+                ret = handler();
+                if (ret === undefined) {
+                    reset($button);
+                } else {
+                    ret.then(reset.bind(null, $button));
+                }
+            });
+        }
         return function ($button) {
             return {
                 reset: reset.bind(null, $button),
-                processed: processed.bind(null, $button)
+                processed: processed.bind(null, $button),
+                click: click.bind(null, $button)
             };
         };
     }());
@@ -105,6 +120,70 @@ define(['jquery'], function ($) {
                 $badgeMap[category].text(count);
             }
         };
+    }());
+    // band tab
+    bandCtrl = (function () {
+        var $tabpanel = $('div#mbs-scanFolder-band', $panel),
+            $form = $('form', $tabpanel),
+            $select = $('select', $form),
+            $img = $('img', $tabpanel),
+            reverseButton = genViewButton(
+                $('button.mbs-reverse-button', $tabpanel)
+            ),
+            //viewButton =  genViewButton($('button', $form)),
+            viewMessage = genViewMessage($('span.mbs-message', $form)),
+            viewImg,
+
+            clickHandlers;
+
+        viewImg = (function () {
+            var reverseMap = {
+                'n': 's',
+                's': 'n',
+                'e': 'w',
+                'w': 'e'
+            };
+            function setLink(cntxt) {
+                $img.attr('src', 'image/band/PE004.jpg?dir=' + cntxt.dir);
+            }
+            function reverse(cntxt) {
+                cntxt.dir = reverseMap[cntxt.dir];
+                setLink(cntxt);
+            }
+            return function ($img, filename) {
+                var cntxt = {
+                    $img: $img,
+                    filename: filename,
+                    dir: 'n'
+                };
+                setLink(cntxt);
+                return {
+                    reverse: reverse.bind(null, cntxt)
+                };
+            };
+        }());
+
+        clickHandlers = assinFormButtonHandlers(
+            $form,
+            $('button', $form),
+            function () {
+                return $select.val();
+            }
+        );
+
+        function addOption(title) {
+            $select.append($('<option>').text(title));
+        }
+
+        reverseButton.click(viewImg($img).reverse);
+
+        return {
+            addOption: addOption,
+            click: clickHandlers.progress,
+            clickReverseBtn: reverseButton.click,
+            message: viewMessage.message
+        };
+
     }());
     // color-SingleFace tab
     colorSFCtrl = (function () {
@@ -180,7 +259,8 @@ define(['jquery'], function ($) {
     return {
         setBadgeCount: badgesCtrl.setCount,
         grayCtrl: grayCtrl,
-        colorSFCtrl: colorSFCtrl
+        colorSFCtrl: colorSFCtrl,
+        bandCtrl: bandCtrl
     };
 
 
