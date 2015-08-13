@@ -1,5 +1,5 @@
 /*jslint node: true, indent: 4 , nomen:true */
-/*global jQuery */
+/*global jQuery, Promise */
 
 function unuseVars() {
     'use strict';
@@ -8,59 +8,18 @@ function unuseVars() {
 
 module.exports = (function () {
     'use strict';
-    var router = require('express').Router({
-            strict: false
-        }),
+    var driverPromise = require('./apiDriver').driverPromise,
         dynamicImage = require('./dynamicImage'),
-        driverPromise = require('./ajaxDriver').driverPromise;
+
+        router;
+
+    router = require('express').Router({
+        strict: false
+    });
 
     router.use(/^\//, function (req, res) {
         unuseVars(req);
-        //console.log('makeBookSupporter web server top page.');
-        //res.sendFile(__dirname + '/contents/view.html');
-        res.redirect('/mbs/view.html');
-    });
-
-    router.use('/api/:ajaxtype(*)', function (req, res) {
-        //console.log('ajax api call.');
-        //console.log(req.params.ajaxtype);
-        //console.log(req.body);
-        try {
-            driverPromise(req.params.ajaxtype, req.body)
-                .then(function (response) {
-                    // console.log('async done!');
-                    res.json(response);
-                })
-                .catch(function (error) {
-                    res.status(501).json(error);
-                });
-
-        } catch (ev) {
-            if (ev.status !== undefined) {
-                res.status(501).json({
-                    message:    ev.message
-                });
-            } else {
-                throw ev;
-            }
-        }
-    });
-
-    router.use('/image/:jpegtype/:jpegfile(*.jpg)', function (req, res) {
-        dynamicImage.getBuffer({
-            jpegfile: req.params.jpegfile,
-            jpegtype: req.params.jpegtype,
-            query: req.query
-        }).then(function (imageBuffer) {
-            res
-                .status(200)
-                .set({'Content-Type': 'image/jpeg' })
-                .send(imageBuffer);
-        }).catch(function (err) {
-            res.status(501).json({
-                err: err
-            });
-        });
+        res.redirect(301, '/mbs/view.html');
     });
 
     router.use(':htmlfile(*.html)', function (req, res) {
@@ -73,11 +32,63 @@ module.exports = (function () {
         res.sendFile(__dirname + '/contents' + req.params.cssfile);
     });
 
+    function genErrorInfo(err) {
+        if (typeof err === 'string') {
+            return {
+                errorName: '<reject>',
+                message: err
+            };
+        }
+        return {
+            errorName: err.name,
+            message: err.message,
+            stack: err.stack
+        };
+    }
+    router.use('/api/:apitype(*)', function (req, res) {
+        driverPromise(req.params.apitype, req.body)
+            .then(function (response) {
+                res.json(response);
+                //throw new Error('test Error');
+                //return Promise.reject(new Error('test Error'));
+                //return Promise.reject('simple test Error');
+            })
+            .catch(function (err) {
+                var errInfo;
+                console.log('Error in request:' + req.params.apitype);
+                errInfo = genErrorInfo(err);
+                console.dir(errInfo);
+                res.status(501).json(errInfo);
+            });
+    });
+
+    router.use('/image/:jpegtype/:jpegfile(*.jpg)', function (req, res) {
+        dynamicImage.getBuffer({
+            jpegfile: req.params.jpegfile,
+            jpegtype: req.params.jpegtype,
+            query: req.query
+        }).then(function (imageBuffer) {
+            res.status(200)
+                .set({'Content-Type': 'image/jpeg' })
+                .send(imageBuffer);
+        }).catch(function (err) {
+            var errInfo;
+            console.log([
+                'Error in request image',
+                req.params.jpegtype,
+                req.params.jpegtype
+            ].join(':'));
+            errInfo = genErrorInfo(err);
+            console.dir(errInfo);
+            res.status(501).json(errInfo);
+        });
+    });
 
     router.use(':url(*)', function (req) {
         console.log('route no match');
         console.log(req.params.url);
         throw new Error('not found ' + req.params.url);
     });
+
     return router;
 }());

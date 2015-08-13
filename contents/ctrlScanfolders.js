@@ -58,7 +58,6 @@ define([
                         grayCtrl.message('同じカテゴリのファイルが在るためファイルは移動しませんでした。');
                     }
                 }).catch(function (err) {
-                    grayCtrl.doneProcess();
                     grayCtrl.message('エラー発生');
                     reject(err);
                 });

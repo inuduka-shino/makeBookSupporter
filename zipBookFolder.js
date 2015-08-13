@@ -6,17 +6,14 @@ module.exports = (function () {
     var path = require('path'),
         fs = require('fs'),
         archiver = require('archiver'),
-        jpgFiles = require('./jpgFiles'),
+        queryJpegFiles = require('./bookFolders').queryJpegFiles,
 
-        zipArchiver,
-        booksFolderPath;
+        bookFolderBasePath = require('../setting/setting_booklog').basePath,
 
-    function init(booksFolderPath0) {
-        booksFolderPath = booksFolderPath0;
-    }
+        zipArchiver;
 
     function zipBookFilePath(folderName) {
-        return path.join(booksFolderPath, folderName + '.zip');
+        return path.join(bookFolderBasePath, folderName + '.zip');
     }
 
     function checkZipFile(folderName) {
@@ -52,7 +49,7 @@ module.exports = (function () {
     }
 
     function checkFiles(foldername, files) {
-        return jpgFiles.query(foldername).then(function (jpgFilesInfo) {
+        return queryJpegFiles(foldername).then(function (jpgFilesInfo) {
             var idx,
                 fullpathList = [],
                 currentFileList = jpgFilesInfo.files.map(function (file) {
@@ -74,7 +71,7 @@ module.exports = (function () {
                                 '-' + currentFileList[idx] + ')'
                     };
                 }
-                fullpathList.push(path.join(booksFolderPath, foldername, files[idx]));
+                fullpathList.push(path.join(bookFolderBasePath, foldername, files[idx]));
             }
             //console.log('files OK');
             return {
@@ -143,7 +140,6 @@ module.exports = (function () {
     }
 
     return {
-        init: init,
         checkZipFile: checkZipFile,
         makeZipFile: makeZipFile
     };
