@@ -27,7 +27,8 @@ require([
         viewFileList = viewCtrl.viewFileList,
         viewCategoryList = viewCtrl.viewCategoryList,
         viewFileListButton = viewCtrl.viewFileListButton,
-        grayCtrl = viewCtrl.viewScanFolders.grayCtrl,
+        scanFolderBooklilst = viewCtrl.viewScanFolders.booklist,
+        //grayCtrl = viewCtrl.viewScanFolders.grayCtrl,
 
         genCategoryManager = categoryManager.genCategoryManager,
         categoryDict = categoryManager.categoryDict,
@@ -122,9 +123,11 @@ require([
     // BookFolder情報取得＆描画
     function redrawFolderView() {
         return Promise.resolve(queryBookFolders()).then(function (response) {
-            var folderItems = {};
+            var folderItems = {},
+                sfBooklist = scanFolderBooklilst();
+
             viewBookFolder.clear();
-            grayCtrl.clearOption();
+            //grayCtrl.clearOption();
             response.folders.forEach(function (folder) {
                 var foldername = folder.name,
                     fileInfo = {
@@ -134,7 +137,7 @@ require([
 
                 if (folder.isXinfo) {
                     fileInfo.type = "bookFolder";
-                    grayCtrl.addOption(foldername);
+                    sfBooklist.add(foldername);
                 } else if (folder.isFolder) {
                     fileInfo.type = "folder";
                 } else {
@@ -154,6 +157,7 @@ require([
                 }
 
             });
+            sfBooklist.close();
         });
     }
 

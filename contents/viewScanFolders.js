@@ -11,8 +11,41 @@ define(['jquery'], function ($) {
         colorSFCtrl,
         grayCtrl,
         bandCtrl,
-        badgesCtrl;
+        badgesCtrl,
+        bookListCtrl;
 
+
+    bookListCtrl = (function () {
+        var setOptionsHandlers = [];
+
+        function setOptionsHandler(handler) {
+            setOptionsHandlers.push(handler);
+        }
+        function add(cntxt, bookname) {
+            cntxt.bookList.push(bookname);
+        }
+        function close(cntxt) {
+            setOptionsHandlers.forEach(function (handler) {
+                handler(cntxt.bookList);
+            });
+            /*
+            bandCtrl.setOptions(bookList);
+            grayCtrl.setOptions(bookList);
+            */
+        }
+        return {
+            booklist: function () {
+                var cntxt = {
+                    bookList: []
+                };
+                return {
+                    add: add.bind(null, cntxt),
+                    close: close.bind(null, cntxt)
+                };
+            },
+            setOptionsHandler: setOptionsHandler
+        };
+    }());
 
     genHandlers = (function () {
         function progress(handlers, handler) {
@@ -191,9 +224,12 @@ define(['jquery'], function ($) {
             }
         );
 
-        function addOption(title) {
-            $select.append($('<option>').text(title));
-        }
+        bookListCtrl.setOptionsHandler(function (titles) {
+            $select.empty();
+            titles.forEach(function (title) {
+                $select.append($('<option>').text(title));
+            });
+        });
 
         viewImg0 = viewImg($img);
         function setImage(info) {
@@ -207,12 +243,10 @@ define(['jquery'], function ($) {
         reverseButton.click(viewImg0.reverse);
 
         return {
-            addOption: addOption,
             click: clickHandlers.progress,
             message: viewMessage.message,
             setImage: setImage,
             getImageInfo: getImageInfo
-            //clickReverseBtn: reverseButton.click
         };
 
     }());
@@ -265,12 +299,13 @@ define(['jquery'], function ($) {
             }
         );
 
-        function addOption(title) {
-            $select.append($('<option>').text(title));
-        }
-        function clearOption() {
+        bookListCtrl.setOptionsHandler(function (titles) {
             $select.empty();
-        }
+            titles.forEach(function (title) {
+                $select.append($('<option>').text(title));
+            });
+        });
+
         function select(handler) {
             $select.on('change', function () {
                 handler($select.val());
@@ -280,8 +315,6 @@ define(['jquery'], function ($) {
         return {
             click: clickHandlers.progress,
             select: select,
-            addOption: addOption,
-            clearOption: clearOption,
             message: viewMessage.message
         };
     }());
@@ -289,6 +322,7 @@ define(['jquery'], function ($) {
 
     return {
         setBadgeCount: badgesCtrl.setCount,
+        booklist: bookListCtrl.booklist,
         grayCtrl: grayCtrl,
         colorSFCtrl: colorSFCtrl,
         bandCtrl: bandCtrl

@@ -19,7 +19,7 @@ define([
 
     function refleshBandFolder() {
         jsonCall.queryOneBandFile().then(function (info) {
-            console.dir(info);
+            //console.dir(info);
             viewScanFolders.bandCtrl.setImage(info);
         });
     }
