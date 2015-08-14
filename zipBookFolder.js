@@ -86,15 +86,21 @@ module.exports = (function () {
                 name: filelname
             });
         }
-        function finalize(self, handler) {
+        function finalize(self) {
             self.archive.finalize();
-            handler();
+            return self.finalizePromise;
         }
         return function (zipFilePath) {
             var self = {};
             self.stream = fs.createWriteStream(zipFilePath);
             self.archive = archiver('zip');
             self.archive.pipe(self.stream);
+            self.finalizePromise = new Promise(function (resolve) {
+                self.stream.on('finish', function () {
+                    console.log('arcive finished');
+                    resolve();
+                });
+            });
 
             return {
                 append: append.bind(null, self),
@@ -129,12 +135,11 @@ module.exports = (function () {
             filesStatus.fullpathList.forEach(function (filepath, idx) {
                 zipArchive.append(files[idx], filepath);
             });
-            zipArchive.finalize(function () {
+            return zipArchive.finalize().then(function () {
                 console.log('gen ' + zipFileStatus.zipFilePath);
                 return {
                     makeZipFileStatus: 'ok'
                 };
-
             });
         });
     }
