@@ -174,26 +174,54 @@ define(['jquery'], function ($) {
 
         viewImg = (function () {
             var reverseMap = {
-                'n': 's',
-                's': 'n',
-                'e': 'w',
-                'w': 'e'
-            };
-            function setLink(cntxt, info) {
-                if (info !== undefined) {
-                    cntxt.filename = info.filename;
-                    cntxt.dir = info.dir;
+                    'n': 's',
+                    's': 'n',
+                    'e': 'w',
+                    'w': 'e'
+                },
+                loadedImageResolve;
+            $img.on('load', function () {
+                if (loadedImageResolve !== undefined) {
+                    loadedImageResolve();
+                    loadedImageResolve = undefined;
                 }
-                $img.attr('src', [
-                    'image/band/',
-                    cntxt.filename,
-                    '?dir=',
-                    cntxt.dir
-                ].join(''));
+            });
+            function setImage(cntxt, info) {
+                return new Promise(function (resolve) {
+                    if (info !== undefined) {
+                        cntxt.filename = info.filename;
+                        cntxt.dir = info.dir;
+                    }
+                    loadedImageResolve = resolve;
+                    $img.attr('src', [
+                        'image/band/',
+                        cntxt.filename,
+                        '?dir=',
+                        cntxt.dir
+                    ].join(''));
+                }).then(function () {
+                    if (cntxt.hidden === true) {
+                        $img.css({
+                            visibility: 'visible'
+                        });
+                        cntxt.hidden = false;
+                    }
+                });
+            }
+            function setNoImage(cntxt) {
+                return new Promise(function (resolve) {
+                    cntxt.filename = undefined;
+                    cntxt.dir = 'n';
+                    cntxt.hidden = true;
+                    $img.css({
+                        visibility: 'hidden'
+                    });
+                    resolve();
+                });
             }
             function reverse(cntxt) {
                 cntxt.dir = reverseMap[cntxt.dir];
-                setLink(cntxt);
+                setImage(cntxt);
             }
             function getInfo(cntxt) {
                 return {
@@ -210,7 +238,8 @@ define(['jquery'], function ($) {
                 //setLink(cntxt);
                 return {
                     reverse: reverse.bind(null, cntxt),
-                    setLink: setLink.bind(null, cntxt),
+                    setImage: setImage.bind(null, cntxt),
+                    setNoImage: setNoImage.bind(null, cntxt),
                     getInfo: getInfo.bind(null, cntxt)
                 };
             };
@@ -233,8 +262,12 @@ define(['jquery'], function ($) {
 
         viewImg0 = viewImg($img);
         function setImage(info) {
+            if (info === null) {
+                $filename.text('--');
+                return viewImg0.setNoImage();
+            }
             $filename.text(info.filename);
-            viewImg0.setLink(info);
+            return viewImg0.setImage(info);
         }
         function getImageInfo() {
             return viewImg0.getInfo();
@@ -271,7 +304,7 @@ define(['jquery'], function ($) {
         function addOption(title) {
             $select.append($('<option>').text(title));
         }
-        ["Jacket", "Cover", "帯"].forEach(function (optionName) {
+        ["Jacket", "Cover"].forEach(function (optionName) {
             addOption(optionName);
         });
 

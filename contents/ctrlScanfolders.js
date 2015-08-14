@@ -10,7 +10,7 @@ define([
         var allCategory = [
             'gray', 'colorSF', 'colorMF', 'band'
         ];
-        jsonCall.queryScanFolders().then(function (info) {
+        return jsonCall.queryScanFolders().then(function (info) {
             allCategory.forEach(function (category) {
                 viewScanFolders.setBadgeCount(category, info[category]);
             });
@@ -18,18 +18,29 @@ define([
     }
 
     function refleshBandFolder() {
-        jsonCall.queryOneBandFile().then(function (info) {
-            //console.dir(info);
-            viewScanFolders.bandCtrl.setImage(info);
-        });
+        return jsonCall.queryOneBandFile()
+            .then(viewScanFolders.bandCtrl.setImage);
     }
+    viewScanFolders.bandCtrl.click(function (bookname) {
+        var imageInfo = viewScanFolders.bandCtrl.getImageInfo();
+        console.log(imageInfo);
+        console.log(bookname);
+        return jsonCall.requestMoveFilesFromScanFolders({
+            categoryType: 'band',
+            filename: imageInfo.filename,
+            dir: imageInfo.dir,
+            bookname: bookname
+        }).then(function () {
+            recount();
+            return refleshBandFolder();
+        });
+    });
 
     // カラー片面　パネル
     (function () {
         var colorSFCtrl = viewScanFolders.colorSFCtrl,
             requestMoveJacketFiles = jsonCall.requestMoveJacketFiles,
-            requestMoveInnerCoverFiles = jsonCall.requestMoveInnerCoverFiles,
-            requestMoveBandFiles =  jsonCall.requestMoveBandFiles;
+            requestMoveInnerCoverFiles = jsonCall.requestMoveInnerCoverFiles;
 
         colorSFCtrl.click(function (selectedVal) {
             return new Promise(function (resolve, reject) {
@@ -41,11 +52,6 @@ define([
                     });
                 } else if (selectedVal === 'Cover') {
                     requestMoveInnerCoverFiles().then(function (response) {
-                        resolve(response);
-                        recount();
-                    });
-                } else if (selectedVal === '帯') {
-                    requestMoveBandFiles().then(function (response) {
                         resolve(response);
                         recount();
                     });

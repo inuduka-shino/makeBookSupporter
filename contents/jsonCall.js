@@ -158,7 +158,12 @@ define(['jquery'], function ($) {
     function requestMoveBandFiles() {
         return jsonCallPromise(
             'api/requestMoveBandFiles'
-
+        );
+    }
+    function requestMoveFilesFromScanFolders(fileinfo) {
+        return jsonCallPromise(
+            'api/requestMoveFilesFromScanFolders',
+            fileinfo
         );
     }
 
@@ -174,7 +179,8 @@ define(['jquery'], function ($) {
         requestMoveGrayJpg: requestMoveGrayJpg,
         requestMoveJacketFiles: requestMoveJacketFiles,
         requestMoveInnerCoverFiles: requestMoveInnerCoverFiles,
-        requestMoveBandFiles: requestMoveBandFiles
+        requestMoveBandFiles: requestMoveBandFiles,
+        requestMoveFilesFromScanFolders: requestMoveFilesFromScanFolders
 
     };
 });

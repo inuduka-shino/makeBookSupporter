@@ -58,7 +58,7 @@ module.exports = (function () {
                 console.log('Error in request:' + req.params.apitype);
                 errInfo = genErrorInfo(err);
                 console.dir(errInfo);
-                res.status(501).json(errInfo);
+                res.status(501).json(errInfo).end();
             });
     });
 
@@ -80,7 +80,7 @@ module.exports = (function () {
             ].join(':'));
             errInfo = genErrorInfo(err);
             console.dir(errInfo);
-            res.status(501).json(errInfo);
+            res.status(501).json(errInfo).end();
         });
     });
 

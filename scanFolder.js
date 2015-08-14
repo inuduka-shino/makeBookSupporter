@@ -6,10 +6,15 @@ module.exports = (function () {
     var path = require('path'),
         fsUtil = require('./fsUtil'),
         imagemagicUtil = require('./imagemagickUtil'),
+
         setting,
+        getScanfolderInfo,
+        getBookfolderInfo,
 
         jpgFileName,
         fileNameParser,
+
+        imageRotateConverters,
 
         moveGrayFolderFiles;
 
@@ -87,6 +92,54 @@ module.exports = (function () {
         };
     }());
 
+    getScanfolderInfo = (function () {
+        var
+            setting_scanFolders = require('../setting/setting_scanFolders'),
+            basePath = setting_scanFolders.basePath,
+
+            infoMap = {};
+
+        function genInfo(info) {
+            var  folderPath = path.join(
+                basePath,
+                info.folderPath
+            );
+            return {
+                folderPath: folderPath,
+                filePattern: folderPath,
+                filePath: function (filename) {
+                    return path.join(folderPath, filename);
+                }
+            };
+        }
+
+        [{
+            name: 'band',
+            folderPath: setting_scanFolders.bandF.path,
+            filePattern: setting_scanFolders.bandF.filePattern
+        }].forEach(function (info) {
+            infoMap[info.name] = genInfo(info);
+        });
+
+        return function (categoryType) {
+            return infoMap[categoryType];
+        };
+
+    }());
+
+    getBookfolderInfo = (function () {
+        var setting_booklog  = require('../setting/setting_booklog');
+        return function (bookname) {
+            var folderPath = path.join(setting_booklog.basePath, bookname);
+            return {
+                folderPath: folderPath,
+                filePath: function (filename) {
+                    return path.join(folderPath, filename);
+                }
+            };
+        };
+    }());
+
     jpgFileName = (function () {
         function zeroPadding(num) {
             return ('000' + num).slice(-3);
@@ -152,6 +205,19 @@ module.exports = (function () {
         };
     }());
 
+    imageRotateConverters = (function () {
+        var cnvs = {};
+        [
+            {name: 'e', rotate: 90},
+            {name: 's', rotate: 180},
+            {name: 'w', rotate: -90}
+        ].forEach(function (info) {
+            cnvs[info.name] = imagemagicUtil.converter({
+                rotate: info.rotate
+            }).conv;
+        });
+        return cnvs;
+    }());
     function queryScanFolders() {
         return Promise.all([
             {
@@ -204,11 +270,17 @@ module.exports = (function () {
             }).sort();
         }).then(function (files) {
             var filepath;
+            if (files.length === 0) {
+                return null;
+            }
             filename = files[0];
             filepath = path.join(folderPath, filename);
             return fsUtil.readFile(filepath).then(imagemagicUtil.identify);
         }).then(function (info) {
             var dir = 'n';
+            if (info === null) {
+                return null;
+            }
             if (info.identify.height > info.identify.width) {
                 dir = 'e';
             }
@@ -358,12 +430,46 @@ module.exports = (function () {
                         status: 'NOTARGET'
                     };
                 }
-                return {
-                    status: 'ERROR',
-                    err: err
-                };
+                throw err;
             });
         };
+    }
+
+
+    function moveFiles(info) {
+        var srcFilepath = getScanfolderInfo(
+                info.categoryType
+            ).filePath(info.filename),
+            dstFilePath = getBookfolderInfo(
+                info.bookname
+            ).filePath(info.filename);
+        if (info.dir === 'n') {
+            return fsUtil.rename(srcFilepath, dstFilePath)
+                .then(function () {
+                    return {
+                        status: 'OK'
+                    };
+                })
+                .catch(function (err) {
+                    console.log('scanFolder.js moveFiles rename Error');
+                    console.dir(err);
+                    throw err;
+                });
+        }
+        return fsUtil.readFile(srcFilepath)
+            .then(imageRotateConverters[info.dir])
+            .then(fsUtil.writeFile.bind(null, dstFilePath))
+            .then(fsUtil.remove.bind(null, srcFilepath))
+            .then(function () {
+                return {
+                    status: 'OK'
+                };
+            })
+            .catch(function (err) {
+                console.log('scanFolder.js moveFiles trans Error');
+                console.dir(err);
+                throw err;
+            });
     }
 
     moveGrayFolderFiles = (function () {
@@ -429,6 +535,7 @@ module.exports = (function () {
                         status: 'NOTARGET'
                     };
                 }
+                throw err;
             });
         };
     }());
@@ -437,6 +544,7 @@ module.exports = (function () {
         setting: setting,
         queryScanFolders: queryScanFolders,
         queryOneBandFile: queryOneBandFile,
+        moveFiles: moveFiles,
         moveGrayFolderFiles: moveGrayFolderFiles,
         moveJacketFiles: genMoveFilesProcess("jacket"),
         moveInnerCoverFiles:  genMoveFilesProcess("innercover"),

@@ -78,6 +78,9 @@ module.exports = (function () {
             if (reqType === 'requestMoveBandFiles') {
                 return scanFolder.moveBandFiles();
             }
+            if (reqType === 'requestMoveFilesFromScanFolders') {
+                return scanFolder.moveFiles(param);
+            }
 
             return Promise.reject(new Error('unkown reqType:' + reqType));
         });
