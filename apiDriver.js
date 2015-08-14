@@ -63,6 +63,9 @@ module.exports = (function () {
             if (reqType === 'queryScanFolders') {
                 return scanFolder.queryScanFolders(param.targetCategory);
             }
+            if (reqType === 'queryOneBandFile') {
+                return scanFolder.queryOneBandFile();
+            }
             if (reqType === 'requestMoveGrayJpg') {
                 return scanFolder.moveGrayFolderFiles(param.foldername);
             }

@@ -133,6 +133,7 @@ define(['jquery'], function ($) {
             //viewButton =  genViewButton($('button', $form)),
             viewMessage = genViewMessage($('span.mbs-message', $form)),
             viewImg,
+            viewImg0,
 
             clickHandlers;
 
@@ -143,22 +144,39 @@ define(['jquery'], function ($) {
                 'e': 'w',
                 'w': 'e'
             };
-            function setLink(cntxt) {
-                $img.attr('src', 'image/band/PE004.jpg?dir=' + cntxt.dir);
+            function setLink(cntxt, info) {
+                if (info !== undefined) {
+                    cntxt.filename = info.filename;
+                    cntxt.dir = info.dir;
+                }
+                $img.attr('src', [
+                    'image/band/',
+                    cntxt.filename,
+                    '?dir=',
+                    cntxt.dir
+                ].join(''));
             }
             function reverse(cntxt) {
                 cntxt.dir = reverseMap[cntxt.dir];
                 setLink(cntxt);
             }
-            return function ($img, filename) {
+            function getInfo(cntxt) {
+                return {
+                    filename: cntxt.filename,
+                    dir: cntxt.dir
+                };
+            }
+            return function ($img) {
                 var cntxt = {
                     $img: $img,
-                    filename: filename,
-                    dir: 'n'
+                    filename: undefined,
+                    dir: undefined
                 };
-                setLink(cntxt);
+                //setLink(cntxt);
                 return {
-                    reverse: reverse.bind(null, cntxt)
+                    reverse: reverse.bind(null, cntxt),
+                    setLink: setLink.bind(null, cntxt),
+                    getInfo: getInfo.bind(null, cntxt)
                 };
             };
         }());
@@ -175,13 +193,23 @@ define(['jquery'], function ($) {
             $select.append($('<option>').text(title));
         }
 
-        reverseButton.click(viewImg($img).reverse);
+        viewImg0 = viewImg($img);
+        function setImage(info) {
+            viewImg0.setLink(info);
+        }
+        function getImageInfo() {
+            return viewImg0.getInfo();
+        }
+
+        reverseButton.click(viewImg0.reverse);
 
         return {
             addOption: addOption,
             click: clickHandlers.progress,
-            clickReverseBtn: reverseButton.click,
-            message: viewMessage.message
+            message: viewMessage.message,
+            setImage: setImage,
+            getImageInfo: getImageInfo
+            //clickReverseBtn: reverseButton.click
         };
 
     }());

@@ -8,7 +8,8 @@ module.exports = (function () {
         setting = require('./scanFolder').setting,
 
         bandFolderPath,
-        convert_sideways,
+        convert_sidewaysR,
+        convert_sidewaysL,
         convert_reverse,
         converter_Fixsize,
         converter_fixHight;
@@ -26,8 +27,11 @@ module.exports = (function () {
         resizeStyle: 'aspectfit',
         gravity: 'Center'
     });
-    convert_sideways = imagemagicUtil.converter({
+    convert_sidewaysR = imagemagicUtil.converter({
         rotate: 90
+    });
+    convert_sidewaysL = imagemagicUtil.converter({
+        rotate: -90
     });
     convert_reverse = imagemagicUtil.converter({
         rotate: 180
@@ -44,22 +48,21 @@ module.exports = (function () {
         //console.log(query);
         if (jpegtype === 'band') {
             filename = path.join(bandFolderPath, jpegfile);
-            return (function () {
-                var fixHightPromise;
-                fixHightPromise = fsUtil.readFile(filename)
-                    .then(imagemagicUtil.identify)
-                    .then(function (info) {
-                        if (info.identify.height > info.identify.width) {
-                            return convert_sideways.conv(info.data);
-                        }
-                        return info.data;
-                    })
-                    .then(converter_fixHight.conv);
+            return fsUtil.readFile(filename).then(function (buffer) {
                 if (query.dir === 'n') {
-                    return fixHightPromise;
+                    return buffer;
                 }
-                return fixHightPromise.then(convert_reverse.conv);
-            }());
+                if (query.dir === 's') {
+                    return convert_reverse.conv(buffer);
+                }
+                if (query.dir === 'e') {
+                    return convert_sidewaysR.conv(buffer);
+                }
+                if (query.dir === 'w') {
+                    return convert_sidewaysL.conv(buffer);
+                }
+                throw new Error('unkown dir code:' + query.dir);
+            }).then(converter_fixHight.conv);
         }
         //console.log(bandFolderPath);
         if (query.aaa === "1") {

@@ -5,7 +5,7 @@ module.exports = (function () {
     'use strict';
     var path = require('path'),
         fsUtil = require('./fsUtil'),
-        imageMagicUtil = require('./imagemagickUtil'),
+        imagemagicUtil = require('./imagemagickUtil'),
         setting,
 
         jpgFileName,
@@ -192,6 +192,33 @@ module.exports = (function () {
         });
     }
 
+    function queryOneBandFile() {
+        var folderPath = setting.bandF.folderPath,
+            filePattern = setting.bandF.filePattern,
+
+            filename;
+
+        return fsUtil.readdir(folderPath).then(function (files) {
+            return files.filter(function (file) {
+                return filePattern.test(file);
+            }).sort();
+        }).then(function (files) {
+            var filepath;
+            filename = files[0];
+            filepath = path.join(folderPath, filename);
+            return fsUtil.readFile(filepath).then(imagemagicUtil.identify);
+        }).then(function (info) {
+            var dir = 'n';
+            if (info.identify.height > info.identify.width) {
+                dir = 'e';
+            }
+            return {
+                filename: filename,
+                dir: dir
+            };
+        });
+    }
+
     function genMoveFilesProcess(categoryType) {
         var
             srcFolderPath,
@@ -309,7 +336,7 @@ module.exports = (function () {
                     return fsUtil
                         .readFile(srcFilePath)
                         .then(
-                            imageMagicUtil.converter({
+                            imagemagicUtil.converter({
                                 rotate: 90
                             }).conv
                         )
@@ -409,6 +436,7 @@ module.exports = (function () {
     return {
         setting: setting,
         queryScanFolders: queryScanFolders,
+        queryOneBandFile: queryOneBandFile,
         moveGrayFolderFiles: moveGrayFolderFiles,
         moveJacketFiles: genMoveFilesProcess("jacket"),
         moveInnerCoverFiles:  genMoveFilesProcess("innercover"),

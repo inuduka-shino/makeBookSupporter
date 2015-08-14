@@ -129,6 +129,12 @@ define(['jquery'], function ($) {
             }
         );
     }
+
+    function queryOneBandFile() {
+        return jsonCallPromise(
+            'api/queryOneBandFile'
+        );
+    }
     function requestMoveGrayJpg(foldername) {
         return jsonCallPromise(
             'api/requestMoveGrayJpg',
@@ -164,6 +170,7 @@ define(['jquery'], function ($) {
         checkZipFile: checkZipFile,
         makeZipFile: makeZipFile,
         queryScanFolders: queryScanFolders,
+        queryOneBandFile: queryOneBandFile,
         requestMoveGrayJpg: requestMoveGrayJpg,
         requestMoveJacketFiles: requestMoveJacketFiles,
         requestMoveInnerCoverFiles: requestMoveInnerCoverFiles,

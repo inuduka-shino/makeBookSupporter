@@ -17,6 +17,13 @@ define([
         });
     }
 
+    function refleshBandFolder() {
+        jsonCall.queryOneBandFile().then(function (info) {
+            console.dir(info);
+            viewScanFolders.bandCtrl.setImage(info);
+        });
+    }
+
     // カラー片面　パネル
     (function () {
         var colorSFCtrl = viewScanFolders.colorSFCtrl,
@@ -87,5 +94,6 @@ define([
 
     $(function () {
         recount();
+        refleshBandFolder();
     });
 });
