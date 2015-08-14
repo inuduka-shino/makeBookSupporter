@@ -121,12 +121,14 @@ define(['jquery'], function ($) {
             }
         };
     }());
+
     // band tab
     bandCtrl = (function () {
         var $tabpanel = $('div#mbs-scanFolder-band', $panel),
             $form = $('form', $tabpanel),
             $select = $('select', $form),
             $img = $('img', $tabpanel),
+            $filename = $('div.mbs-filename', $tabpanel),
             reverseButton = genViewButton(
                 $('button.mbs-reverse-button', $tabpanel)
             ),
@@ -195,6 +197,7 @@ define(['jquery'], function ($) {
 
         viewImg0 = viewImg($img);
         function setImage(info) {
+            $filename.text(info.filename);
             viewImg0.setLink(info);
         }
         function getImageInfo() {

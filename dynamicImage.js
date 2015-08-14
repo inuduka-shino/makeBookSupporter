@@ -46,6 +46,9 @@ module.exports = (function () {
         //onsole.log(jpegtype);
         //console.log(jpegfile);
         //console.log(query);
+        if (jpegfile === 'blank.jpg') {
+            return Promise.resolve(new Buffer(0));
+        }
         if (jpegtype === 'band') {
             filename = path.join(bandFolderPath, jpegfile);
             return fsUtil.readFile(filename).then(function (buffer) {
