@@ -121,6 +121,20 @@ define(['jquery'], function ($) {
             }
         );
     }
+    function queryScanFolders(categoryType) {
+        return jsonCallPromise(
+            'api/queryScanFolders',
+            {
+                categoryType: categoryType
+            }
+        );
+    }
+
+    function queryOneBandFile() {
+        return jsonCallPromise(
+            'api/queryOneBandFile'
+        );
+    }
     function requestMoveGrayJpg(foldername) {
         return jsonCallPromise(
             'api/requestMoveGrayJpg',
@@ -144,7 +158,12 @@ define(['jquery'], function ($) {
     function requestMoveBandFiles() {
         return jsonCallPromise(
             'api/requestMoveBandFiles'
-
+        );
+    }
+    function requestMoveFilesFromScanFolders(fileinfo) {
+        return jsonCallPromise(
+            'api/requestMoveFilesFromScanFolders',
+            fileinfo
         );
     }
 
@@ -155,10 +174,13 @@ define(['jquery'], function ($) {
         queryJpgFiles: queryJpgFiles,
         checkZipFile: checkZipFile,
         makeZipFile: makeZipFile,
+        queryScanFolders: queryScanFolders,
+        queryOneBandFile: queryOneBandFile,
         requestMoveGrayJpg: requestMoveGrayJpg,
         requestMoveJacketFiles: requestMoveJacketFiles,
         requestMoveInnerCoverFiles: requestMoveInnerCoverFiles,
-        requestMoveBandFiles: requestMoveBandFiles
+        requestMoveBandFiles: requestMoveBandFiles,
+        requestMoveFilesFromScanFolders: requestMoveFilesFromScanFolders
 
     };
 });

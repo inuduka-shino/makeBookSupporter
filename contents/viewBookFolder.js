@@ -25,42 +25,74 @@ define(['jquery'], function ($) {
         var $item = $template.clone(),
             $icon =  $item.find('span.mbs-folder-icon'),
             $zipBtn =  $item.find('button.mbs-zip-btn'),
+            $zipBtnTxt = $('span', $zipBtn).eq(1),
             $folderName = $item.find('span.folderName'),
 
             clickHandler = genClickHandler(handler),
             name = info.name,
-            type = info.type;
+            type = info.type,
+            zippingFlag = false,
+            selfIF;
+
+        /*
+        function disable() {
+            $zipBtn.addClass('mbs-disabled');
+            $zipBtn.removeClass('btn-info');
+            $zipBtn.addClass('btn-default');
+        }
+        */
+        function hide() {
+            $zipBtn.hide();
+        }
+        function zipped() {
+            if (zippingFlag) {
+                return;
+            }
+            $zipBtnTxt.text('ziped');
+            $zipBtn.removeClass('btn-success');
+            $zipBtn.addClass('btn-info');
+            $zipBtn.show();
+        }
+        function zipping(stat) {
+            if (stat === 'END') {
+                zippingFlag = false;
+                zipped();
+                return;
+            }
+            zippingFlag = true;
+            $zipBtnTxt.text('zipping');
+            $zipBtn.removeClass('btn-info');
+            $zipBtn.addClass('btn-success');
+            $zipBtn.show();
+        }
+        selfIF = {
+            hide: hide,
+            zipped: zipped,
+            zipping: zipping
+        };
 
         $folderName.text(name);
-        // TODO 表示判定をmainで
         if (type === 'folder' || type === 'file') {
             $icon.removeClass('golden');
-            $zipBtn.hide();
         }
         if (type === 'file') {
             $icon
                 .removeClass('glyphicon-folder-open')
                 .addClass('glyphicon-file');
             $item.addClass('disabled');
-            $zipBtn.hide();
         }
         if (clickHandler !== undefined && type !== 'file') {
+            info.selfIF = selfIF;
             $item.on('click', clickHandler.bind(null, info));
         }
 
+        $zipBtn.hide();
+        $zipBtn.css('cursor', 'not-allowed');
         $zipBtn.on('click', genClickHandler(zipBtnHandler));
+
         $listbox.append($item);
 
-        function disable() {
-            $zipBtn.css('cursor', 'not-allowed');
-            $zipBtn.addClass('mbs-disabled');
-            $zipBtn.removeClass('btn-info');
-            $zipBtn.addClass('btn-default');
-        }
-
-        return {
-            disable: disable
-        };
+        return selfIF;
     }
     $(function () {
         clear();

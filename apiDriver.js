@@ -60,6 +60,12 @@ module.exports = (function () {
                         };
                     });
             }
+            if (reqType === 'queryScanFolders') {
+                return scanFolder.queryScanFolders(param.targetCategory);
+            }
+            if (reqType === 'queryOneBandFile') {
+                return scanFolder.queryOneBandFile();
+            }
             if (reqType === 'requestMoveGrayJpg') {
                 return scanFolder.moveGrayFolderFiles(param.foldername);
             }
@@ -71,6 +77,9 @@ module.exports = (function () {
             }
             if (reqType === 'requestMoveBandFiles') {
                 return scanFolder.moveBandFiles();
+            }
+            if (reqType === 'requestMoveFilesFromScanFolders') {
+                return scanFolder.moveFiles(param);
             }
 
             return Promise.reject(new Error('unkown reqType:' + reqType));

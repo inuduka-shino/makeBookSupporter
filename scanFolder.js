@@ -5,11 +5,16 @@ module.exports = (function () {
     'use strict';
     var path = require('path'),
         fsUtil = require('./fsUtil'),
-        imageMagicUtil = require('./imagemagickUtil'),
+        imagemagicUtil = require('./imagemagickUtil'),
+
         setting,
+        getScanfolderInfo,
+        getBookfolderInfo,
 
         jpgFileName,
         fileNameParser,
+
+        imageRotateConverters,
 
         moveGrayFolderFiles;
 
@@ -42,6 +47,13 @@ module.exports = (function () {
                     setting_scanFolders.colorSF.path
                 ),
                 filePattern: setting_scanFolders.colorSF.filePattern
+            },
+            colorMF: {
+                folderPath: path.join(
+                    setting_scanFolders.basePath,
+                    setting_scanFolders.colorMF.path
+                ),
+                filePattern: setting_scanFolders.colorMF.filePattern
             },
             jacket: {
                 frontPrefix: setting_scanFolders.jacket.frontPrefix,
@@ -77,6 +89,54 @@ module.exports = (function () {
                 prefix: setting_scanFolders.band.prefix
             }
 
+        };
+    }());
+
+    getScanfolderInfo = (function () {
+        var
+            setting_scanFolders = require('../setting/setting_scanFolders'),
+            basePath = setting_scanFolders.basePath,
+
+            infoMap = {};
+
+        function genInfo(info) {
+            var  folderPath = path.join(
+                basePath,
+                info.folderPath
+            );
+            return {
+                folderPath: folderPath,
+                filePattern: folderPath,
+                filePath: function (filename) {
+                    return path.join(folderPath, filename);
+                }
+            };
+        }
+
+        [{
+            name: 'band',
+            folderPath: setting_scanFolders.bandF.path,
+            filePattern: setting_scanFolders.bandF.filePattern
+        }].forEach(function (info) {
+            infoMap[info.name] = genInfo(info);
+        });
+
+        return function (categoryType) {
+            return infoMap[categoryType];
+        };
+
+    }());
+
+    getBookfolderInfo = (function () {
+        var setting_booklog  = require('../setting/setting_booklog');
+        return function (bookname) {
+            var folderPath = path.join(setting_booklog.basePath, bookname);
+            return {
+                folderPath: folderPath,
+                filePath: function (filename) {
+                    return path.join(folderPath, filename);
+                }
+            };
         };
     }());
 
@@ -144,6 +204,92 @@ module.exports = (function () {
             };
         };
     }());
+
+    imageRotateConverters = (function () {
+        var cnvs = {};
+        [
+            {name: 'e', rotate: 90},
+            {name: 's', rotate: 180},
+            {name: 'w', rotate: -90}
+        ].forEach(function (info) {
+            cnvs[info.name] = imagemagicUtil.converter({
+                rotate: info.rotate
+            }).conv;
+        });
+        return cnvs;
+    }());
+    function queryScanFolders() {
+        return Promise.all([
+            {
+                categoryType: 'gray',
+                folderPath: setting.grayFolder.fullpath,
+                filePattern: setting.grayFolder.filePattern
+            }, {
+                categoryType: 'colorSF',
+                folderPath: setting.colorSF.folderPath,
+                filePattern: setting.colorSF.filePattern
+            }, {
+                categoryType: 'colorMF',
+                folderPath: setting.colorMF.folderPath,
+                filePattern: setting.colorMF.filePattern
+            }, {
+                categoryType: 'band',
+                folderPath: setting.bandF.folderPath,
+                filePattern: setting.bandF.filePattern
+            }
+        ].map(function (info) {
+            return fsUtil.readdir(info.folderPath).then(function (files) {
+                var filePattern = info.filePattern;
+                return {
+                    categoryType: info.categoryType,
+                    fileCount: files.filter(function (filename) {
+                        return filePattern.test(filename);
+                    }).length
+                };
+            });
+        })).then(function (dirInfos) {
+            var ret = {status: 'OK'};
+            //console.log(dirInfos);
+            dirInfos.forEach(function (value) {
+                ret[value.categoryType] = value.fileCount;
+            });
+            //console.log(ret);
+            return ret;
+        });
+    }
+
+    function queryOneBandFile() {
+        var folderPath = setting.bandF.folderPath,
+            filePattern = setting.bandF.filePattern,
+
+            filename;
+
+        return fsUtil.readdir(folderPath).then(function (files) {
+            return files.filter(function (file) {
+                return filePattern.test(file);
+            }).sort();
+        }).then(function (files) {
+            var filepath;
+            if (files.length === 0) {
+                return null;
+            }
+            filename = files[0];
+            filepath = path.join(folderPath, filename);
+            return fsUtil.readFile(filepath).then(imagemagicUtil.identify);
+        }).then(function (info) {
+            var dir = 'n';
+            if (info === null) {
+                return null;
+            }
+            if (info.identify.height > info.identify.width) {
+                dir = 'e';
+            }
+            return {
+                filename: filename,
+                dir: dir
+            };
+        });
+    }
 
     function genMoveFilesProcess(categoryType) {
         var
@@ -262,7 +408,7 @@ module.exports = (function () {
                     return fsUtil
                         .readFile(srcFilePath)
                         .then(
-                            imageMagicUtil.converter({
+                            imagemagicUtil.converter({
                                 rotate: 90
                             }).conv
                         )
@@ -284,12 +430,46 @@ module.exports = (function () {
                         status: 'NOTARGET'
                     };
                 }
-                return {
-                    status: 'ERROR',
-                    err: err
-                };
+                throw err;
             });
         };
+    }
+
+
+    function moveFiles(info) {
+        var srcFilepath = getScanfolderInfo(
+                info.categoryType
+            ).filePath(info.filename),
+            dstFilePath = getBookfolderInfo(
+                info.bookname
+            ).filePath(info.filename);
+        if (info.dir === 'n') {
+            return fsUtil.rename(srcFilepath, dstFilePath)
+                .then(function () {
+                    return {
+                        status: 'OK'
+                    };
+                })
+                .catch(function (err) {
+                    console.log('scanFolder.js moveFiles rename Error');
+                    console.dir(err);
+                    throw err;
+                });
+        }
+        return fsUtil.readFile(srcFilepath)
+            .then(imageRotateConverters[info.dir])
+            .then(fsUtil.writeFile.bind(null, dstFilePath))
+            .then(fsUtil.remove.bind(null, srcFilepath))
+            .then(function () {
+                return {
+                    status: 'OK'
+                };
+            })
+            .catch(function (err) {
+                console.log('scanFolder.js moveFiles trans Error');
+                console.dir(err);
+                throw err;
+            });
     }
 
     moveGrayFolderFiles = (function () {
@@ -355,12 +535,16 @@ module.exports = (function () {
                         status: 'NOTARGET'
                     };
                 }
+                throw err;
             });
         };
     }());
 
     return {
         setting: setting,
+        queryScanFolders: queryScanFolders,
+        queryOneBandFile: queryOneBandFile,
+        moveFiles: moveFiles,
         moveGrayFolderFiles: moveGrayFolderFiles,
         moveJacketFiles: genMoveFilesProcess("jacket"),
         moveInnerCoverFiles:  genMoveFilesProcess("innercover"),

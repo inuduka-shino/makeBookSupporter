@@ -1,17 +1,46 @@
 /*jslint indent: 4, es5: true */
-/*global define, console, Promise, window */
+/*global define, console, Promise, window, $ */
 define([
     'viewScanFolders',
     'jsonCall'
 ], function (viewScanFolders, jsonCall) {
     'use strict';
 
+    function recount() {
+        var allCategory = [
+            'gray', 'colorSF', 'colorMF', 'band'
+        ];
+        return jsonCall.queryScanFolders().then(function (info) {
+            allCategory.forEach(function (category) {
+                viewScanFolders.setBadgeCount(category, info[category]);
+            });
+        });
+    }
+
+    function refleshBandFolder() {
+        return jsonCall.queryOneBandFile()
+            .then(viewScanFolders.bandCtrl.setImage);
+    }
+    viewScanFolders.bandCtrl.click(function (bookname) {
+        var imageInfo = viewScanFolders.bandCtrl.getImageInfo();
+        console.log(imageInfo);
+        console.log(bookname);
+        return jsonCall.requestMoveFilesFromScanFolders({
+            categoryType: 'band',
+            filename: imageInfo.filename,
+            dir: imageInfo.dir,
+            bookname: bookname
+        }).then(function () {
+            recount();
+            return refleshBandFolder();
+        });
+    });
+
     // カラー片面　パネル
     (function () {
         var colorSFCtrl = viewScanFolders.colorSFCtrl,
             requestMoveJacketFiles = jsonCall.requestMoveJacketFiles,
-            requestMoveInnerCoverFiles = jsonCall.requestMoveInnerCoverFiles,
-            requestMoveBandFiles =  jsonCall.requestMoveBandFiles;
+            requestMoveInnerCoverFiles = jsonCall.requestMoveInnerCoverFiles;
 
         colorSFCtrl.click(function (selectedVal) {
             return new Promise(function (resolve, reject) {
@@ -19,14 +48,12 @@ define([
                 if (selectedVal === 'Jacket') {
                     requestMoveJacketFiles().then(function (response) {
                         resolve(response);
+                        recount();
                     });
                 } else if (selectedVal === 'Cover') {
                     requestMoveInnerCoverFiles().then(function (response) {
                         resolve(response);
-                    });
-                } else if (selectedVal === '帯') {
-                    requestMoveBandFiles().then(function (response) {
-                        resolve(response);
+                        recount();
                     });
                 } else {
                     colorSFCtrl.message('unkown select value:' + selectedVal);
@@ -56,6 +83,8 @@ define([
                         grayCtrl.message('対象ファイルがありません。');
                     } else if (response.status === 'NOTMOVE') {
                         grayCtrl.message('同じカテゴリのファイルが在るためファイルは移動しませんでした。');
+                    } else {
+                        recount();
                     }
                 }).catch(function (err) {
                     grayCtrl.message('エラー発生');
@@ -68,4 +97,9 @@ define([
             grayCtrl.message();
         });
     }());
+
+    $(function () {
+        recount();
+        refleshBandFolder();
+    });
 });

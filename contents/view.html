@@ -64,11 +64,13 @@
 
                 <!-- Nav tabs -->
                 <ul class="nav nav-tabs" role="tablist">
-                  <li role="presentation" class="active"><a href="#mbs-scanFolder-gray" aria-controls="mbs-scanFolder-gray" role="tab" data-toggle="pill">白黒</a></li>
+                  <li role="presentation" class="active"><a href="#mbs-scanFolder-gray" aria-controls="mbs-scanFolder-gray" role="tab" data-toggle="pill">白黒<span class="badge">-</span></a></li>
                   <li role="presentation"><a href="#mbs-scanFolder-colorM" aria-controls="mbs-scanFolder-colorM" role="tab" data-toggle="pill">
-                      カラー（両面）</a></li>
+                      カラー（両面）<span class="badge">-</span></a></li>
                   <li role="presentation"><a href="#mbs-scanFolder-colorS" aria-controls="mbs-scanFolder-colorS" role="tab" data-toggle="pill">
-                      カラー（片面）/帯</a></li>
+                      カラー（片面）<span class="badge">-</span></a></li>
+                  <li role="presentation"><a href="#mbs-scanFolder-band" aria-controls="mbs-scanFolder-band" role="tab" data-toggle="pill">
+                      帯<span class="badge">-</span></a></li>
                   <li role="presentation"><a href="#mbs-scanFolder-work" aria-controls="mbs-scanFolder-work" role="tab" data-toggle="pill">
                       WORK</a></li>
                 </ul>
@@ -96,9 +98,31 @@
                           <span class="text-danger mbs-message">message</span>
                       </form>
                   </div>
+                  <div role="tabpanel" class="tab-pane fade" id="mbs-scanFolder-band">
+                      <form class="form-inline">
+                          <select class="form-control">
+                          </select>
+                          <button class="btn btn-success" data-loading-text="移動中...">
+                              移動
+                          </button>
+                          <span class="text-danger mbs-message">message</span>
+                      </form>
+                      <ul class="list-group">
+                        <li class="list-group-item row">
+                            <div class="col-md-1">
+                                <div class="mbs-filename">---</div>
+                                <button class="btn btn-default mbs-reverse-button"
+                                    data-loading-text="反転中...">
+                                    反転
+                                </button>
+                            </div>
+                            <div class="col-md-11">
+                                <img src="image/band/blank.jpg">
+                            </div>
+                        </li>
+                      </ul>
+                  </div>
                   <div role="tabpanel" class="tab-pane fade" id="mbs-scanFolder-work">
-                      <img src="image/test/test1.jpg?aaa=1">
-                      <img src="image/test/test1.jpg?aaa=2">
                   </div>
                 </div>
 
@@ -136,17 +160,16 @@
                     <template id="folderListItemTemplate">
                       <a href="#" class="list-group-item">
                           <div class="row">
-                            <div class="col-xs-1 mbs-folderlist-icons">
+                            <div class="col-md-1 mbs-folderlist-icons">
                                 <span class="glyphicon mbs-folder-icon glyphicon-folder-open golden" aria-hidden="true"></span>
 
-                                <!--
                                 <button class="btn btn-info mbs-zip-btn">
-                                    <span class="glyphicon glyphicon-compressed" aria-hidden="false"></span>zip
+                                    <span class="glyphicon glyphicon-compressed" aria-hidden="false"></span>
+                                    <span></span>
                                 </button>
-                                -->
 
                             </div>
-                            <div class="col-xs-11">
+                            <div class="col-md-11 mbs-folderlist-bookname">
                                 <span class="folderName">folder name</span>
                             </div>
                           </div>

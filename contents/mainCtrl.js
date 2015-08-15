@@ -27,14 +27,13 @@ require([
         viewFileList = viewCtrl.viewFileList,
         viewCategoryList = viewCtrl.viewCategoryList,
         viewFileListButton = viewCtrl.viewFileListButton,
-        grayCtrl = viewCtrl.viewScanFolders.grayCtrl,
+        scanFolderBooklilst = viewCtrl.viewScanFolders.booklist,
+        //grayCtrl = viewCtrl.viewScanFolders.grayCtrl,
 
         genCategoryManager = categoryManager.genCategoryManager,
         categoryDict = categoryManager.categoryDict,
 
         currentSelectedFileInfo;
-
-
 
     // category
     function makeCategorysInfo(categorySet) {
@@ -66,7 +65,8 @@ require([
                 type: fileInfo.type,
                 files: response.files.map(function (fileInfo) {
                     return fileInfo.name;
-                })
+                }),
+                folderItem: fileInfo.selfIF
             };
 
             viewCategoryList.setCategorys(
@@ -122,9 +122,11 @@ require([
     // BookFolder情報取得＆描画
     function redrawFolderView() {
         return Promise.resolve(queryBookFolders()).then(function (response) {
-            var folderItems = {};
+            var folderItems = {},
+                sfBooklist = scanFolderBooklilst();
+
             viewBookFolder.clear();
-            grayCtrl.clearOption();
+            //grayCtrl.clearOption();
             response.folders.forEach(function (folder) {
                 var foldername = folder.name,
                     fileInfo = {
@@ -134,7 +136,7 @@ require([
 
                 if (folder.isXinfo) {
                     fileInfo.type = "bookFolder";
-                    grayCtrl.addOption(foldername);
+                    sfBooklist.add(foldername);
                 } else if (folder.isFolder) {
                     fileInfo.type = "folder";
                 } else {
@@ -144,7 +146,7 @@ require([
 
                 if ((zfBasename !== undefined) &&
                         (folderItems[zfBasename] !== undefined)) {
-                    folderItems[zfBasename].disable();
+                    folderItems[zfBasename].zipped();
                 } else {
                     folderItems[foldername] = viewBookFolder.add(
                         fileInfo,
@@ -154,6 +156,7 @@ require([
                 }
 
             });
+            sfBooklist.close();
         });
     }
 
@@ -169,18 +172,25 @@ require([
     // ファイルリスト　戻るボタン
     viewFileListButton.backBtnCtrl.click(function () {
         currentSelectedFileInfo = undefined;
-        redrawFolderView();
+        //redrawFolderView();
         viewContainer.change('folderList');
     });
     // ファイルリスト　zipボタン
     viewFileListButton.zipBtnCtrl.click(function () {
         var dfr = $.Deferred(),
             name = currentSelectedFileInfo.name,
-            files = currentSelectedFileInfo.files;
+            files = currentSelectedFileInfo.files,
+            folderItem = currentSelectedFileInfo.folderItem;
+
+        viewFileListButton.zipBtnCtrl.disable();
+        folderItem.zipping();
         requestMakeZipFile(name, files).done(function (response) {
             dfr.resolve();
             if (response.result.makeZipFileStatus === 'ok') {
-                viewFileListButton.zipBtnCtrl.disable();
+                folderItem.zipping('END');
+            } else {
+                viewFileListButton.zipBtnCtrl.enable();
+                folderItem.hide();
             }
         });
         return dfr.promise();
