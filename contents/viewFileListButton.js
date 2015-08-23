@@ -62,7 +62,8 @@ define(['jquery'], function ($) {
                 if (self.clickProcess !== undefined) {
                     return;
                 }
-                $button.addClass('active');
+                //
+                //$button.addClass('active');
                 clearClickProcess(self);
                 self.clickProcess = $.Deferred();
                 handlerRet = self.handler();
@@ -74,7 +75,8 @@ define(['jquery'], function ($) {
                     self.clickProcess.resolve();
                 }
                 self.clickProcess.done(function () {
-                    $button.removeClass('active');
+                    //
+                    //$button.removeClass('active');
                     self.clickProcess = undefined;
                 });
             });

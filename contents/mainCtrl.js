@@ -35,8 +35,6 @@ require([
 
         currentSelectedFileInfo;
 
-
-
     // category
     function makeCategorysInfo(categorySet) {
         var codeList = categorySet.getCategoryCodeList();
@@ -67,7 +65,8 @@ require([
                 type: fileInfo.type,
                 files: response.files.map(function (fileInfo) {
                     return fileInfo.name;
-                })
+                }),
+                folderItem: fileInfo.selfIF
             };
 
             viewCategoryList.setCategorys(
@@ -147,7 +146,7 @@ require([
 
                 if ((zfBasename !== undefined) &&
                         (folderItems[zfBasename] !== undefined)) {
-                    folderItems[zfBasename].disable();
+                    folderItems[zfBasename].zipped();
                 } else {
                     folderItems[foldername] = viewBookFolder.add(
                         fileInfo,
@@ -173,18 +172,25 @@ require([
     // ファイルリスト　戻るボタン
     viewFileListButton.backBtnCtrl.click(function () {
         currentSelectedFileInfo = undefined;
-        redrawFolderView();
+        //redrawFolderView();
         viewContainer.change('folderList');
     });
     // ファイルリスト　zipボタン
     viewFileListButton.zipBtnCtrl.click(function () {
         var dfr = $.Deferred(),
             name = currentSelectedFileInfo.name,
-            files = currentSelectedFileInfo.files;
+            files = currentSelectedFileInfo.files,
+            folderItem = currentSelectedFileInfo.folderItem;
+
+        viewFileListButton.zipBtnCtrl.disable();
+        folderItem.zipping();
         requestMakeZipFile(name, files).done(function (response) {
             dfr.resolve();
             if (response.result.makeZipFileStatus === 'ok') {
-                viewFileListButton.zipBtnCtrl.disable();
+                folderItem.zipping('END');
+            } else {
+                viewFileListButton.zipBtnCtrl.enable();
+                folderItem.hide();
             }
         });
         return dfr.promise();
