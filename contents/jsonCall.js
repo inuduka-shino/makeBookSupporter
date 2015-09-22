@@ -130,9 +130,15 @@ define(['jquery'], function ($) {
         );
     }
 
-    function queryOneBandFile() {
+    function queryOneBandFile(start) {
+        if (start === undefined) {
+            start = 0;
+        }
         return jsonCallPromise(
-            'api/queryOneBandFile'
+            'api/queryOneBandFile',
+            {
+                start: start
+            }
         );
     }
     function requestMoveGrayJpg(foldername) {

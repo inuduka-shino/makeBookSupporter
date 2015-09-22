@@ -5,7 +5,9 @@ define([
     'jsonCall'
 ], function (viewScanFolders, jsonCall) {
     'use strict';
+    var refleshBandFolder;
 
+    // recount
     function recount() {
         var allCategory = [
             'gray', 'colorSF', 'colorMF', 'band'
@@ -17,10 +19,35 @@ define([
         });
     }
 
-    function refleshBandFolder() {
-        return jsonCall.queryOneBandFile()
-            .then(viewScanFolders.bandCtrl.setImage);
-    }
+    $(recount);
+    viewScanFolders.tabsClick(recount);
+
+    // refleshBandFolder
+    refleshBandFolder = (function () {
+        var start = 0;
+
+        return function (offset) {
+            if (offset !== undefined) {
+                start += offset;
+            }
+            return jsonCall.queryOneBandFile(start)
+                .then(function (info) {
+                    if (info === null) {
+                        start = 0;
+                    } else {
+                        start = info.index;
+                    }
+                    return info;
+                }).then(viewScanFolders.bandCtrl.setImage);
+        };
+    }());
+
+    $(function () {refleshBandFolder(); });
+    viewScanFolders.bandCtrl.tabClick(refleshBandFolder);
+    viewScanFolders.bandCtrl.clickPass(function () {
+        refleshBandFolder(1);
+    });
+
     viewScanFolders.bandCtrl.click(function (bookname) {
         var imageInfo = viewScanFolders.bandCtrl.getImageInfo();
         // console.log(imageInfo);
@@ -100,8 +127,4 @@ define([
         });
     }());
 
-    $(function () {
-        recount();
-        refleshBandFolder();
-    });
 });

@@ -258,7 +258,7 @@ module.exports = (function () {
         });
     }
 
-    function queryOneBandFile() {
+    function queryOneBandFile(start) {
         var folderPath = setting.bandF.folderPath,
             filePattern = setting.bandF.filePattern,
 
@@ -273,7 +273,10 @@ module.exports = (function () {
             if (files.length === 0) {
                 return null;
             }
-            filename = files[0];
+            if (start >= files.length) {
+                start = 0;
+            }
+            filename = files[start];
             filepath = path.join(folderPath, filename);
             return fsUtil.readFile(filepath).then(imagemagicUtil.identify);
         }).then(function (info) {
@@ -286,7 +289,8 @@ module.exports = (function () {
             }
             return {
                 filename: filename,
-                dir: dir
+                dir: dir,
+                index: start
             };
         });
     }
