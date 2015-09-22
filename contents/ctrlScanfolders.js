@@ -21,6 +21,18 @@ define([
         return jsonCall.queryOneBandFile()
             .then(viewScanFolders.bandCtrl.setImage);
     }
+
+    $(function () {
+        recount();
+    });
+    viewScanFolders.tabsClick(function () {
+        //console.log('select tab:' + tabName);
+        refleshBandFolder();
+        recount();
+    });
+
+    viewScanFolders.bandCtrl.tabClick(refleshBandFolder);
+
     viewScanFolders.bandCtrl.click(function (bookname) {
         var imageInfo = viewScanFolders.bandCtrl.getImageInfo();
         // console.log(imageInfo);
@@ -100,8 +112,4 @@ define([
         });
     }());
 
-    $(function () {
-        recount();
-        refleshBandFolder();
-    });
 });
