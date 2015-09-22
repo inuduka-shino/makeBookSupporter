@@ -23,8 +23,8 @@ define([
     }
     viewScanFolders.bandCtrl.click(function (bookname) {
         var imageInfo = viewScanFolders.bandCtrl.getImageInfo();
-        console.log(imageInfo);
-        console.log(bookname);
+        // console.log(imageInfo);
+        // console.log(bookname);
         return jsonCall.requestMoveFilesFromScanFolders({
             categoryType: 'band',
             filename: imageInfo.filename,
@@ -74,6 +74,7 @@ define([
 
         // 移動
         grayCtrl.click(function (title) {
+            grayCtrl.message('ファイル移動中:' + title);
             return new Promise(function (resolve, reject) {
                 //console.log('click 移動 - ' + title);
                 grayCtrl.message();
@@ -84,6 +85,7 @@ define([
                     } else if (response.status === 'NOTMOVE') {
                         grayCtrl.message('同じカテゴリのファイルが在るためファイルは移動しませんでした。');
                     } else {
+                        grayCtrl.message('ファイル移動終了:' + title);
                         recount();
                     }
                 }).catch(function (err) {
