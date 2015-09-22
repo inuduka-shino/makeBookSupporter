@@ -8,6 +8,7 @@ define(['jquery'], function ($) {
         genViewMessage,
         genViewButton,
 
+        tabsCtrl,
         colorSFCtrl,
         grayCtrl,
         bandCtrl,
@@ -131,6 +132,48 @@ define(['jquery'], function ($) {
         });
     }
 
+    tabsCtrl = (function () {
+        var $ancors = $('a[role="tab"]', $panel),
+            handlerMap;
+
+        handlerMap = (function () {
+            var handlerDict = {};
+            function setHandler(name, handler) {
+                var handlers = handlerDict[name];
+                if (handlers === undefined) {
+                    handlers = handlerDict[name] = [];
+                }
+                handlers.push(handler);
+            }
+            function handlersCall(name, arg) {
+                var handlers = handlerDict[name];
+                if (handlers === undefined) {
+                    return;
+                }
+                handlers.forEach(function (handler) {
+                    handler(arg);
+                });
+            }
+            return {
+                setHandler: setHandler,
+                call: handlersCall
+            };
+        }());
+
+        $ancors.on('click', function (elm) {
+            var $target = $(elm.currentTarget),
+                tagName = $target.attr('aria-controls');
+            //console.log('tab select:' + tagName);
+            handlerMap.call(tagName);
+            handlerMap.call('allTabs', tagName);
+        });
+
+        return {
+            setHandler: handlerMap.setHandler
+        };
+
+    }());
+
     badgesCtrl = (function () {
         var $ancorList = $('ul>li>a', $panel),
             $badgeMap = {};
@@ -235,6 +278,12 @@ define(['jquery'], function ($) {
                     dir: cntxt.dir
                 };
             }
+            /*
+            tabsCtrl.setHandler('mbs-scanFolder-band', function () {
+                console.log('帯パネル選択');
+            });
+            */
+
             return function ($img) {
                 var cntxt = {
                     $img: $img,
@@ -282,6 +331,7 @@ define(['jquery'], function ($) {
         reverseButton.click(viewImg0.reverse);
 
         return {
+            tabClick: tabsCtrl.setHandler.bind(null, 'mbs-scanFolder-band'),
             click: clickHandlers.progress,
             message: viewMessage.message,
             setImage: setImage,
@@ -298,7 +348,11 @@ define(['jquery'], function ($) {
             viewMessage = genViewMessage($('span.mbs-message', $form)),
 
             clickHandlers;
-
+        /*
+        tabsCtrl.setHandler('mbs-scanFolder-colorS', function () {
+            console.log('カラー片面選択');
+        });
+        */
         clickHandlers = assinFormButtonHandlers(
             $form,
             $('button', $form),
@@ -361,6 +415,7 @@ define(['jquery'], function ($) {
 
     return {
         setBadgeCount: badgesCtrl.setCount,
+        tabsClick: tabsCtrl.setHandler.bind(null, 'allTabs'),
         booklist: bookListCtrl.booklist,
         grayCtrl: grayCtrl,
         colorSFCtrl: colorSFCtrl,
