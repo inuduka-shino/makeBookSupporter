@@ -150,7 +150,13 @@ define(['jquery'], function ($) {
 
         return {
             setCount: function (category, count) {
-                $badgeMap[category].text(count);
+                var countStr;
+                if (count === 0) {
+                    countStr = '';
+                } else {
+                    countStr = String(count);
+                }
+                $badgeMap[category].text(countStr);
             }
         };
     }());
