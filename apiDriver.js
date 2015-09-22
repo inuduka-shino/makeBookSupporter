@@ -16,15 +16,13 @@ module.exports = (function () {
                 return Promise.resolve(localSetting);
             }
             if (reqType === 'genBKL') {
-                return new Promise(function (resolve) {
-                    var count = param.count;
-                    genBooklogFolder.genFolderAsync(count)
-                        .then(function () {
-                            resolve({
-                                status: 'OK'
-                            });
-                        });
-                });
+                return genBooklogFolder.genFolderAsync(param.count)
+                    .then(function (info) {
+                        console.dir(info);
+                        return {
+                            status: 'OK'
+                        };
+                    });
             }
             if (reqType === 'queryBookFolders') {
                 return queryBookFolders().then(function (folders) {
