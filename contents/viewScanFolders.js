@@ -214,6 +214,9 @@ define(['jquery'], function ($) {
             reverseButton = genViewButton(
                 $('button.mbs-reverse-button', $tabpanel)
             ),
+            passButton = genViewButton(
+                $('button.mbs-pass-button', $tabpanel)
+            ),
             //viewButton =  genViewButton($('button', $form)),
             viewMessage = genViewMessage($('span.mbs-message', $form)),
             viewImg,
@@ -333,6 +336,7 @@ define(['jquery'], function ($) {
         return {
             tabClick: tabsCtrl.setHandler.bind(null, 'mbs-scanFolder-band'),
             click: clickHandlers.progress,
+            clickPass: passButton.click,
             message: viewMessage.message,
             setImage: setImage,
             getImageInfo: getImageInfo
