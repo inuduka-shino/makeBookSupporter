@@ -83,6 +83,9 @@ module.exports = (function () {
             }
 
             return Promise.reject(new Error('unkown reqType:' + reqType));
+        }).catch(function (err) {
+            console.log('--- API ERROR ---');
+            throw err;
         });
     }
 
