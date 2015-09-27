@@ -271,6 +271,7 @@ module.exports = (function () {
         }).then(function (files) {
             var filepath;
             if (files.length === 0) {
+                //console.log('no files');
                 return null;
             }
             if (start >= files.length) {
@@ -282,7 +283,9 @@ module.exports = (function () {
         }).then(function (info) {
             var dir = 'n';
             if (info === null) {
-                return null;
+                return {
+                    filename: null
+                };
             }
             if (info.identify.height > info.identify.width) {
                 dir = 'e';
