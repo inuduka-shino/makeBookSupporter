@@ -32,7 +32,7 @@ define([
             }
             return jsonCall.queryOneBandFile(start)
                 .then(function (info) {
-                    if (info === null) {
+                    if (info.index === undefined) {
                         start = 0;
                     } else {
                         start = info.index;
@@ -52,6 +52,9 @@ define([
         var imageInfo = viewScanFolders.bandCtrl.getImageInfo();
         // console.log(imageInfo);
         // console.log(bookname);
+        if (imageInfo.filename === null) {
+            return true;
+        }
         return jsonCall.requestMoveFilesFromScanFolders({
             categoryType: 'band',
             filename: imageInfo.filename,
