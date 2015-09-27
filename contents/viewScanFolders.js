@@ -238,31 +238,9 @@ define(['jquery'], function ($) {
                     loadedImageResolve = undefined;
                 }
             });
-            function setImage(cntxt, info) {
-                return new Promise(function (resolve) {
-                    if (info !== undefined) {
-                        cntxt.filename = info.filename;
-                        cntxt.dir = info.dir;
-                    }
-                    loadedImageResolve = resolve;
-                    $img.attr('src', [
-                        'image/band/',
-                        cntxt.filename,
-                        '?dir=',
-                        cntxt.dir
-                    ].join(''));
-                }).then(function () {
-                    if (cntxt.hidden === true) {
-                        $img.css({
-                            visibility: 'visible'
-                        });
-                        cntxt.hidden = false;
-                    }
-                });
-            }
             function setNoImage(cntxt) {
                 return new Promise(function (resolve) {
-                    cntxt.filename = undefined;
+                    cntxt.filename = null;
                     cntxt.dir = 'n';
                     cntxt.hidden = true;
                     $img.css({
@@ -271,6 +249,36 @@ define(['jquery'], function ($) {
                     resolve();
                 });
             }
+            function setImage(cntxt, info) {
+                return new Promise(function (resolve) {
+                    if (info !== undefined) {
+                        cntxt.filename = info.filename;
+                        cntxt.dir = info.dir;
+                    }
+                    if (cntxt.filename === null) {
+                        resolve('NO IMAGE FILE');
+                    } else {
+                        $img.attr('src', [
+                            'image/band/',
+                            cntxt.filename,
+                            '?dir=',
+                            cntxt.dir
+                        ].join(''));
+                        loadedImageResolve = resolve;
+                    }
+                }).then(function (stat) {
+                    if (stat === 'NO IMAGE FILE') {
+                        return setNoImage(cntxt);
+                    }
+                    if (cntxt.hidden === true) {
+                        $img.css({
+                            visibility: 'visible'
+                        });
+                        cntxt.hidden = false;
+                    }
+                });
+            }
+
             function reverse(cntxt) {
                 cntxt.dir = reverseMap[cntxt.dir];
                 setImage(cntxt);
