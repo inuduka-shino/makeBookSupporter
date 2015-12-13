@@ -20,21 +20,26 @@ module.exports = (function () {
         width: 150,
         height: 150,
         resizeStyle: 'aspectfit',
-        gravity: 'Center'
+        gravity: 'Center',
+        format: 'JPEG'
     });
     converter_fixHight = imagemagicUtil.converter({
         height: 150,
         resizeStyle: 'aspectfit',
-        gravity: 'Center'
+        gravity: 'Center',
+        format: 'JPEG'
     });
     convert_sidewaysR = imagemagicUtil.converter({
-        rotate: 90
+        rotate: 90,
+        format: 'JPEG'
     });
     convert_sidewaysL = imagemagicUtil.converter({
-        rotate: -90
+        rotate: -90,
+        format: 'JPEG'
     });
     convert_reverse = imagemagicUtil.converter({
-        rotate: 180
+        rotate: 180,
+        format: 'JPEG'
     });
     function getBuffer(arg) {
         var jpegfile = arg.jpegfile,
