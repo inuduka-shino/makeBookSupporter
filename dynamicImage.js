@@ -4,7 +4,8 @@ module.exports = (function () {
     'use strict';
     var path = require('path'),
         fsUtil = require('./fsUtil'),
-        imagemagicUtil = require('./imagemagickUtil'),
+        imagemagicUtil = require('./gmBuffUtil'),
+        //imagemagicUtil = require('./imagemagickUtil'),
         setting = require('./scanFolder').setting,
 
         bandFolderPath,
