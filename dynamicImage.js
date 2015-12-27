@@ -4,44 +4,13 @@ module.exports = (function () {
     'use strict';
     var path = require('path'),
         fsUtil = require('./fsUtil'),
-        imagemagicUtil = require('./gmBuffUtil'),
-        //imagemagicUtil = require('./imagemagickUtil'),
+        imagemagicUtil = require('./gmUtil'),
         setting = require('./scanFolder').setting,
 
-        bandFolderPath,
-        convert_sidewaysR,
-        convert_sidewaysL,
-        convert_reverse,
-        converter_Fixsize,
-        converter_fixHight;
+        bandFolderPath;
 
-    // console.log(setting);
     bandFolderPath = setting.bandF.folderPath;
-    converter_Fixsize = imagemagicUtil.converter({
-        width: 150,
-        height: 150,
-        resizeStyle: 'aspectfit',
-        gravity: 'Center',
-        format: 'JPEG'
-    });
-    converter_fixHight = imagemagicUtil.converter({
-        height: 150,
-        resizeStyle: 'aspectfit',
-        gravity: 'Center',
-        format: 'JPEG'
-    });
-    convert_sidewaysR = imagemagicUtil.converter({
-        rotate: 90,
-        format: 'JPEG'
-    });
-    convert_sidewaysL = imagemagicUtil.converter({
-        rotate: -90,
-        format: 'JPEG'
-    });
-    convert_reverse = imagemagicUtil.converter({
-        rotate: 180,
-        format: 'JPEG'
-    });
+
     function getBuffer(arg) {
         var jpegfile = arg.jpegfile,
             jpegtype = arg.jpegtype,
@@ -49,41 +18,31 @@ module.exports = (function () {
 
             filename;
 
-        //onsole.log(jpegtype);
-        //console.log(jpegfile);
-        //console.log(query);
         if (jpegfile === 'blank.jpg') {
             return Promise.resolve(new Buffer(0));
         }
         if (jpegtype === 'band') {
             filename = path.join(bandFolderPath, jpegfile);
             return fsUtil.readFile(filename).then(function (buffer) {
+                var im = imagemagicUtil.genImage(buffer);
+
                 if (query.dir === 'n') {
-                    return buffer;
+                    /*eslint no-empty: 2*/
+                } else if (query.dir === 's') {
+                    im.rotate('180');
+                } else if (query.dir === 'e') {
+                    im.rotate('90');
+                } else if (query.dir === 'w') {
+                    im.rotate('-90');
+                } else {
+                    throw new Error('unkown dir code:' + query.dir);
                 }
-                if (query.dir === 's') {
-                    return convert_reverse.conv(buffer);
-                }
-                if (query.dir === 'e') {
-                    return convert_sidewaysR.conv(buffer);
-                }
-                if (query.dir === 'w') {
-                    return convert_sidewaysL.conv(buffer);
-                }
-                throw new Error('unkown dir code:' + query.dir);
-            }).then(converter_fixHight.conv);
+                im.resize(null, 150);
+                return im.toBufferPromise();
+            });
         }
-        //console.log(bandFolderPath);
-        if (query.aaa === '1') {
-            filename = path.join(bandFolderPath, 'PAD003.jpg');
-        } else {
-            filename = path.join(bandFolderPath, 'PAD003.jpg');
-        }
-
-
-        return fsUtil.readFile(filename)
-            .then(converter_Fixsize.conv);
     }
+
     return {
         getBuffer: getBuffer
     };

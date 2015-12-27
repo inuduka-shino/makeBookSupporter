@@ -6,8 +6,7 @@ module.exports = (function () {
     'use strict';
     var path = require('path'),
         fsUtil = require('./fsUtil'),
-        imagemagicUtil = require('./gmBuffUtil'),
-        //imagemagicUtil = require('./imagemagickUtil'),
+        imagemagicUtil = require('./gmUtil'),
 
         setting,
         getScanfolderInfo,
@@ -15,8 +14,6 @@ module.exports = (function () {
 
         jpgFileName,
         fileNameParser,
-
-        imageRotateConverters,
 
         moveGrayFolderFiles;
 
@@ -207,19 +204,6 @@ module.exports = (function () {
         };
     }());
 
-    imageRotateConverters = (function () {
-        var cnvs = {};
-        [
-            {name: 'e', rotate: 90},
-            {name: 's', rotate: 180},
-            {name: 'w', rotate: -90}
-        ].forEach(function (info) {
-            cnvs[info.name] = imagemagicUtil.converter({
-                rotate: info.rotate
-            }).conv;
-        });
-        return cnvs;
-    }());
     function queryScanFolders() {
         return Promise.all([
             {
@@ -274,22 +258,20 @@ module.exports = (function () {
             var filepath;
             if (files.length === 0) {
                 //console.log('no files');
-                return null;
+                return Promise.reject('no files');
             }
             if (start >= files.length) {
                 start = 0;
             }
             filename = files[start];
             filepath = path.join(folderPath, filename);
-            return fsUtil.readFile(filepath).then(imagemagicUtil.identify);
+
+            return fsUtil.readFile(filepath);
+        }).then(function (buff) {
+            return imagemagicUtil.genImage(buff).identifyPromise();
         }).then(function (info) {
             var dir = 'n';
-            if (info === null) {
-                return {
-                    filename: null
-                };
-            }
-            if (info.identify.height > info.identify.width) {
+            if (info.identify.size.height > info.identify.size.width) {
                 dir = 'e';
             }
             return {
@@ -297,6 +279,14 @@ module.exports = (function () {
                 dir: dir,
                 index: start
             };
+        }).catch(function (err) {
+            if (err === 'no files') {
+                return {
+                    filename: null
+                };
+
+            }
+            throw err;
         });
     }
 
@@ -416,11 +406,10 @@ module.exports = (function () {
 
                     return fsUtil
                         .readFile(srcFilePath)
-                        .then(
-                            imagemagicUtil.converter({
-                                rotate: 90
-                            }).conv
-                        )
+                        .then(function (buff) {
+                            var im = imagemagicUtil.genImage(buff).rotate('90');
+                            return im.toBufferPromise();
+                        })
                         .then(function (buff) {
                             return Promise.all(dstFilePaths.map(function (filepath) {
                                 return fsUtil.writeFile(filepath, buff);
@@ -466,7 +455,21 @@ module.exports = (function () {
                 });
         }
         return fsUtil.readFile(srcFilepath)
-            .then(imageRotateConverters[info.dir])
+            .then(function (buffer) {
+                var im = imagemagicUtil.genImage(buffer);
+                if (info.dir === 'n') {
+                    /*eslint no-empty: 2*/
+                } else if (info.dir === 's') {
+                    im.rotate('180');
+                } else if (info.dir === 'e') {
+                    im.rotate('90');
+                } else if (info.dir === 'w') {
+                    im.rotate('-90');
+                } else {
+                    throw new Error('unkown dir code:' + info.dir);
+                }
+                return im.toBufferPromise();
+            })
             .then(fsUtil.writeFile.bind(null, dstFilePath))
             .then(fsUtil.remove.bind(null, srcFilepath))
             .then(function () {
