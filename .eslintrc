@@ -6,7 +6,8 @@
         ],
         "quotes": [
             1,
-            "single"
+            "single",
+            "avoid-escape"
         ],
         "linebreak-style": [
             2,

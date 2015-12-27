@@ -1,4 +1,5 @@
 /*jslint node: true, indent: 4 , nomen:true */
+/*eslint no-console: 0 */
 /*global Promise */
 
 module.exports = (function () {
@@ -199,7 +200,7 @@ module.exports = (function () {
             return Number(rslt[1]);
         }
         return function (prefix) {
-            var pattern = new RegExp(prefix + "([0-9]+)\\.jpg");
+            var pattern = new RegExp(prefix + '([0-9]+)\\.jpg');
             return {
                 getNum: getNum.bind(null, pattern)
             };
@@ -338,9 +339,9 @@ module.exports = (function () {
 
         return function () {
             var targetDirs = [
-                    srcFolderPath,
-                    moveToFolderPath
-                ];
+                srcFolderPath,
+                moveToFolderPath
+            ];
 
             if (copyToFolderPath !== undefined &&
                     copyToFolderPath !== moveToFolderPath) {
@@ -501,8 +502,8 @@ module.exports = (function () {
                     genFilename = jpgFileName(filePrefix).genFilename,
                     files;
                 if (destFolderFiles.filter(function (filename) {
-                        return filename.slice(0, 2) === filePrefix;
-                    }).length !== 0) {
+                    return filename.slice(0, 2) === filePrefix;
+                }).length !== 0) {
                     //console.log(">> すでにある");
                     throw errorExistSameCategoryFiles;
                 }
@@ -554,8 +555,8 @@ module.exports = (function () {
         queryOneBandFile: queryOneBandFile,
         moveFiles: moveFiles,
         moveGrayFolderFiles: moveGrayFolderFiles,
-        moveJacketFiles: genMoveFilesProcess("jacket"),
-        moveInnerCoverFiles:  genMoveFilesProcess("innercover"),
-        moveBandFiles: genMoveFilesProcess("band")
+        moveJacketFiles: genMoveFilesProcess('jacket'),
+        moveInnerCoverFiles:  genMoveFilesProcess('innercover'),
+        moveBandFiles: genMoveFilesProcess('band')
     };
 }());

@@ -112,7 +112,7 @@ module.exports = (function () {
                         //buffer.concat([chunk]);
                         chunks.push(chunk);
                     })
-                    .on("close", function () {
+                    .on('close', function () {
                         resolve(Buffer.concat(chunks));
                     });
             }).then(function (buffer) {
@@ -155,7 +155,7 @@ module.exports = (function () {
                     .on('data', function (chunk) {
                         dstStream.write(chunk);
                     })
-                    .on("close", function () {
+                    .on('close', function () {
                         dstStream.end();
                         resolve();
                     });

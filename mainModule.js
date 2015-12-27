@@ -1,5 +1,6 @@
 /*jslint node: true, indent: 4 , nomen:true */
-/*global jQuery, Promise */
+/* eslint-disable no-console */
+/*global Promise */
 
 function unuseVars() {
     'use strict';

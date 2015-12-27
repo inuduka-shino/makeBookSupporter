@@ -74,7 +74,7 @@ module.exports = (function () {
             }).then(converter_fixHight.conv);
         }
         //console.log(bandFolderPath);
-        if (query.aaa === "1") {
+        if (query.aaa === '1') {
             filename = path.join(bandFolderPath, 'PAD003.jpg');
         } else {
             filename = path.join(bandFolderPath, 'PAD003.jpg');
